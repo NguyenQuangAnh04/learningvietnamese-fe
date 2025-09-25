@@ -32,7 +32,8 @@ export default function Signup() {
     location: "",
     language: "",
     gender: "",
-    newPassword: ""
+    newPassword: "",
+    roleName: ""
   });
 
   const handleInputChange = (field: keyof UserDTO, value: string) => {

@@ -22,7 +22,7 @@ export default function Game() {
             <div className="max-w-[1200px] mx-auto w-full mt-6 px-4">
                 <div className="flex items-center space-x-3 mb-6">
                     <button className="text-gray-300 hover:text-white transition">
-                        <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+                        <FontAwesomeIcon icon={faArrowLeft} onClick={() => navigate("/")} size="lg" />
                     </button>
                     <div>
                         <h2 className="text-xl font-bold">Practice Games</h2>

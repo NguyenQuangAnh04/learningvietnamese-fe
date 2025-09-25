@@ -9,7 +9,8 @@ export function useSubmitAnswer() {
             return res.data;
         },
         onSuccess: () => {
-            useQuery.invalidateQueries({ queryKey: ["question"] })
+            useQuery.invalidateQueries({ queryKey: ["game"] })
         }
     })
 }
+

@@ -23,6 +23,7 @@ export default function EditProfile() {
         location: "",
         language: "",
         gender: "",
+        roleName: "",
         newPassword: ""
     });
     const [originalData, setOriginalData] = useState<UserDTO>({
@@ -37,6 +38,7 @@ export default function EditProfile() {
         createdAt: "",
         updatedAt: "",
         location: "",
+        roleName: "",
         language: "",
         gender: "",
         newPassword: ""

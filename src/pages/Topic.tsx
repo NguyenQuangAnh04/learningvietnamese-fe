@@ -69,7 +69,13 @@ export default function Topic() {
                                         Score: {topic.score}
                                     </span>
                                     <button
-                                        onClick={() => navigate(`/quiz/game/${topic.gameId}/topic/${topic.id}`)}
+                                        onClick={() => {
+                                            if (typeGame === "AS") {
+                                                navigate(`/quiz/game/${topic.gameId}/arrange-sentence/${topic.id}`);
+                                            } else {
+                                                navigate(`/quiz/game/${topic.gameId}/topic/${topic.id}`);
+                                            }
+                                        }}
                                         className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                                     >
                                         Play Again
@@ -77,7 +83,13 @@ export default function Topic() {
                                 </div>
                             ) : (
                                 <button
-                                    onClick={() => navigate(`/quiz/game/${topic.gameId}/topic/${topic.id}`)}
+                                    onClick={() => {
+                                        if (typeGame === "AS") {
+                                            navigate(`/quiz/game/${topic.gameId}/arrange-sentence/${topic.id}`);
+                                        } else {
+                                            navigate(`/quiz/game/${topic.gameId}/topic/${topic.id}`);
+                                        }
+                                    }}
                                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                                 >
                                     Play

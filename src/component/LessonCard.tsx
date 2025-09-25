@@ -1,37 +1,25 @@
 import { faBookOpen, faClock, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Progress } from 'antd';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LessonDTO } from '../types/Lession';
+import { useQueryLesson } from '../hooks/useLesson';
 
-interface LessonItem extends LessonDTO {
-  completed?: boolean;
-  progress?: number;
-}
+
 
 export default function LessonCard() {
-  const lessons: LessonItem[] = [
-    { id: 1, title: "Basic Greetings", describe: "Learn essential greetings and polite expressions", time: "15 min", level: "beginner", completed: true, progress: 100 },
-    { id: 2, title: "Family Members", describe: "Vocabulary for family relationships", time: "20 min", level: "beginner", completed: true, progress: 100 },
-    { id: 3, title: "Food & Drinks", describe: "Common food and beverage vocabulary", time: "25 min", level: "beginner", completed: true, progress: 100 },
-    { id: 4, title: "Daily Routines", describe: "Expressing daily activities and schedules", time: "30 min", level: "intermediate", progress: 40 },
-    { id: 5, title: "Past Tense Verbs", describe: "Understanding and using past tense", time: "35 min", level: "intermediate", progress: 32 },
-    { id: 6, title: "Business Communication", describe: "Professional language for workplace", time: "40 min", level: "advanced", progress: 2 }
-  ];
-
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [level, setLevel] = useState('');
+  const { data } = useQueryLesson(0, searchTerm, level);
   const navigate = useNavigate();
-
-
+  const lessons = data?.lesson || [];
   const badgeClass = (level: string) =>
     ({
       beginner: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40',
       intermediate: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40',
       advanced: 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
     } as Record<string, string>)[level] || 'bg-gray-500/20 text-gray-400 border border-gray-500/40';
-
   return (
-    <div className="max-w-[1250px] mx-auto py-6 px-2 text-white min-h-screen">
+    <div className="max-w-[1200px] mx-auto py-6 px-2 text-white min-h-screen">
       <div className="flex flex-col gap-6">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -49,11 +37,13 @@ export default function LessonCard() {
             </span>
             <input
               placeholder="Search lessons..."
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-[#2a3b45] text-sm rounded-lg pl-9 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
           </div>
           <div className="relative w-40">
             <select
+            onChange={(e) => setLevel(e.target.value)}
               className="w-full appearance-none bg-[#2a3b45] text-sm rounded-lg pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             >
               <option value="">All Levels</option>
@@ -73,7 +63,7 @@ export default function LessonCard() {
             >
               <div className="flex items-start justify-between">
                 <h3 className="font-semibold text-[15px] leading-snug">{lesson.title}</h3>
-                <div className='w-12 h-12'>
+                {/* <div className='w-12 h-12'>
                   <svg style={{ height: 0 }}>
                     <defs>
                       <linearGradient id="gradient" gradientTransform="rotate(90)">
@@ -92,7 +82,7 @@ export default function LessonCard() {
                     )}
                   />
 
-                </div>
+                </div> */}
               </div>
 
               <p className="text-[13px] text-gray-300 mt-2 leading-snug line-clamp-3">
@@ -100,7 +90,7 @@ export default function LessonCard() {
               </p>
 
               <div className="mt-3 flex items-center gap-3 flex-wrap">
-                <span className={`text-[11px] px-2 py-[3px] rounded-md font-medium capitalize ${badgeClass(lesson.level)}`}>
+                <span className={`text-[11px] px-2 py-[3px] rounded-md font-medium capitalize ${badgeClass((lesson.level).toLowerCase())}`}>
                   {lesson.level}
                 </span>
                 <span className="text-[12px] text-gray-400 flex items-center gap-1">
@@ -109,7 +99,7 @@ export default function LessonCard() {
               </div>
 
               <div className="mt-5">
-                <button
+                <button onClick={() => navigate(`/lessons/${lesson.title.toLowerCase().replace(/\s+/g, '-')}`)}
                   className="w-full text-[13px] font-medium rounded-md flex items-center justify-center gap-3 py-2 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white shadow-md"
                 >
                   <FontAwesomeIcon icon={faBookOpen} className="text-[12px]" />

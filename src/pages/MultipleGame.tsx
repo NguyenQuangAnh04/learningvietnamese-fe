@@ -1,11 +1,14 @@
 import { faArrowLeft, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
+import ReactConfetti from 'react-confetti';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useWindowSize } from 'react-use';
 import { startGame, submit } from '../service/gameService';
 
 const MultipleGame: React.FC = () => {
     const { gameId, topicId } = useParams();
+    const { width, height } = useWindowSize();
     const [playerGameId, setPlayerGameId] = useState<number>(0);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [typeGame, setTypeGame] = useState<string>("");
@@ -26,26 +29,39 @@ const MultipleGame: React.FC = () => {
 
             window.speechSynthesis.speak(utterance);
         } else {
-            alert('Trình duyệt không hỗ trợ Speech Synthesis');
+            alert('Browser does not support Speech Synthesis');
         }
     };
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [correctOption, setCorrectOption] = useState<boolean | null>(null);
+    const [correctOption, setCorrectOption] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
+    const [correctAnswers, setCorrectAnswers] = useState(0);
+    const [totalScore, setTotalScore] = useState(0);
+    const [bonusScore, setBonusScore] = useState(0);
+    const [correctOptionId, setCorrectOptionId] = useState<number | null>(null);
     const handleSubmitAnswer = async (answerDTO: AnswerDTO) => {
+        setIsSubmitting(true);
         const res = await submit(answerDTO);
         setCorrectOption(res.data.correct);
-
+        setCorrectOptionId(res.data.correctOptionId);
         if (res.data.correct) {
             setScore(prev => prev + 10);
+            setCorrectAnswers(prev => prev + 1);
         }
 
         if (res.data.complete) {
             setIsCompleted(true);
+            if (res.data.currentStreak === questions.length) {
+                setBonusScore(20);
+                setTotalScore(res.data.totalScore);
+            }
         }
+        setIsSubmitting(false);
     }
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedId, setSelectedId] = useState<number | null>(null);
+    console.log(questions)
     useEffect(() => {
         const fetchData = async () => {
             const res = await startGame(Number(gameId), Number(topicId));
@@ -60,43 +76,82 @@ const MultipleGame: React.FC = () => {
     }, [])
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) {
-        return <div className="text-white p-6">❌ Không tìm thấy câu hỏi</div>;
+        return <div className="text-white p-6">❌ Question not found</div>;
     }
-    const maxScore = questions.length * 10;
-    const finalPercent = Math.round((score / maxScore) * 100);
     const progressPercent = ((currentQuestionIndex + 1) / questions.length) * 100;
-    const finalScore = score;
     console.log(score)
     return (
-        <div className="bg-[#141f25] min-h-screen text-white p-6">
-            <div className="max-w-[1200px] mx-auto ">
+        <div className="bg-[#141f25] min-h-screen flex flex-col justify-center items-center text-white p-6">
+            <div className="max-w-md w-full">
+                {isCompleted && <ReactConfetti width={width} height={height} />}
                 <button onClick={() => navigate(`/topic/${typeGame}`)} className="mb-4 text-gray-300 hover:text-white">
                     <FontAwesomeIcon icon={faArrowLeft} />
                 </button>
 
                 {isCompleted ? (
-                    <div className=''>
-                        <div className="mt-10 p-6 bg-[#1b262c] rounded-lg text-center ">
-                            <h2 className="text-2xl font-bold text-green-400">🎉 Quiz Completed!</h2>
-                            <p className="text-white mt-2">Your final score: {finalScore}</p>
+                    <div className="space-y-2 mb-6 ">
+                        <div className="bg-[#223540] p-4 rounded-lg text-center">
+                            <h3 className="text-lg font-semibold text-blue-300 mb-2">Base Score</h3>
+                            <p className="text-2xl font-bold text-white">{score} points</p>
 
-                            <div>
+                            {bonusScore > 0 && (
+                                <div className="mt-2 pt-2 border-t border-gray-600">
+                                    <div className="flex items-center justify-between ">
+                                        <span className="text-sm text-yellow-300"> Perfect Bonus:</span>
+                                        <span className="text-lg font-semibold text-yellow-400">+{bonusScore}</span>
+                                    </div>
+                                </div>
+                            )}
 
-                                <button
-                                    className='bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors'
-                                    onClick={() => window.location.reload()}
-                                >
-                                    Play again
-                                </button>
+                            {bonusScore > 0 && (
+                                <div className="mt-1 pt-1 border-t border-gray-500">
+                                    <div className="flex items-center justify-between ">
+                                        <span className="text-sm text-white font-medium">Total:</span>
+                                        <span className="text-xl font-bold text-green-400">{totalScore}</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
-                            </div>
+                        <div className="bg-[#223540] p-4 rounded-lg text-center">
+                            <h3 className="text-sm font-semibold text-green-300 mb-2">Accuracy</h3>
+                            <p className="text-xl font-bold text-white">
+                                {Math.round((correctAnswers / questions.length) * 100)}%
+                            </p>
+                            <p className="text-sm text-gray-300 mt-1">
+                                {correctAnswers}/{questions.length} correct answers
+                            </p>
+                        </div>
+
+                        <div className="bg-[#223540] p-4 rounded-lg text-center">
+                            <h3 className="text-lg font-semibold text-yellow-300 mb-2">Grade</h3>
+                            <p className="text-xl font-bold text-white">
+                                {correctAnswers / questions.length >= 0.9 ? "🏆 Excellent!" :
+                                    correctAnswers / questions.length >= 0.7 ? "⭐ Good!" :
+                                        correctAnswers / questions.length >= 0.5 ? "👍 Fair!" : "💪 Keep trying!"}
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-lg px-6 py-3 rounded-lg font-semibold transition-colors"
+                            >
+                                Play Again
+                            </button>
+                            <button
+                                onClick={() => window.history.back()}
+                                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                            >
+                                Back
+                            </button>
                         </div>
                     </div>
                 ) : (
                     <div>
                         <div className="flex justify-between items-center mb-6 mt-2">
                             <h1>Multiple Choice</h1>
-                            <h2>Score {currentQuestionIndex + 1} / {questions.length} | Point: {score}</h2>
+                            <h2>Score: {score} | {correctAnswers}/{currentQuestionIndex >= questions.length ? questions.length : currentQuestionIndex + 1}</h2>
+                            <h2></h2>
                         </div>
 
                         <div className="relative max-w-[1200px] w-full bg-gray-600 overflow-hidden rounded">
@@ -115,7 +170,7 @@ const MultipleGame: React.FC = () => {
                                 <button
                                     onClick={() => speakText(currentQuestion.questionText)}
                                     className="flex items-center space-x-2 bg-gray-500  text-white px-6 py-3 rounded-lg transition-colors font-semibold"
-                                    title="Đọc câu hỏi"
+                                    title="Listen to question"
                                 >
                                     <FontAwesomeIcon icon={faVolumeUp} />
                                     <span>Listen to Pronunciation</span>
@@ -131,7 +186,9 @@ const MultipleGame: React.FC = () => {
                         <div className="grid grid-cols-2 gap-4 mt-5">
                             {currentQuestion.options.map((option, index) => {
                                 const isSelected = selectedId === option.id;
-                                const isCorrect = option.correct;
+                                const isCorrectAnswer = correctOptionId === option.id;
+                                const isWrongAnswer = isSelected && !isCorrectAnswer;
+
                                 return (
                                     <button
                                         key={option.id}
@@ -141,21 +198,19 @@ const MultipleGame: React.FC = () => {
                                                 optionId: option.id,
                                                 gameId: Number(gameId),
                                                 topicId: Number(topicId),
-                                                answer: option.content ? option.content : "",
+                                                answer: [],
                                                 playerId: playerGameId
-                                            }); setSelectedId(option.id)
+                                            });
+                                            setSelectedId(option.id);
                                         }}
-                                        disabled={selectedId !== null} // chỉ cho chọn 1 lần
+                                        disabled={selectedId !== null}
                                         className={`flex items-center space-x-2 rounded-lg p-3 transition-colors
-                                        ${isSelected
-                                                ? correctOption === null
-                                                    ? "bg-[#1b262c]" // chưa submit → giữ màu mặc định
-                                                    : correctOption
-                                                        ? "bg-green-600" // đúng
-                                                        : "bg-red-600"   // sai
-                                                : "bg-[#1b262c] hover:bg-[#0f4c75]"
+                                        ${isCorrectAnswer
+                                                ? "bg-green-600"
+                                                : isWrongAnswer
+                                                    ? "bg-red-600"
+                                                    : "bg-[#1b262c] hover:bg-[#0f4c75]"
                                             }`}
-
                                     >
                                         <span className="flex items-center justify-center bg-[#354047] rounded-full w-8 h-8">
                                             {String.fromCharCode(65 + index)}
@@ -164,6 +219,7 @@ const MultipleGame: React.FC = () => {
                                     </button>
                                 );
                             })}
+
                         </div>
 
                         {selectedId !== null && (
@@ -171,7 +227,7 @@ const MultipleGame: React.FC = () => {
                                 {correctOption ? (
                                     <p className="text-green-400 font-semibold">✅ Correct!</p>
                                 ) : (
-                                    <p className="text-red-400 font-semibold">❌ InCorrect!</p>
+                                    <p className="text-red-400 font-semibold">❌ Incorrect!</p>
                                 )}
                                 <p className="mt-2 text-gray-300">{currentQuestion.explanation}</p>
                                 {selectedId !== null && (
@@ -181,13 +237,14 @@ const MultipleGame: React.FC = () => {
                                             if (currentQuestionIndex < questions.length - 1) {
                                                 setCurrentQuestionIndex(i => i + 1);
                                                 setSelectedId(null);
-                                                setCorrectOption(null);
+                                                // setCorrectOptionId(null);
+                                                // setCorrectOption(false);
                                             } else {
-                                                setIsCompleted(true); // quiz hoàn thành
+                                                setIsCompleted(true);
                                             }
                                         }}
                                     >
-                                        Next question
+                                        Next Question
                                     </button>
 
 

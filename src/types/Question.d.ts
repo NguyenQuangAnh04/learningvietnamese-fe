@@ -11,6 +11,7 @@ interface Question {
     image_url: string;
     questionId: number;
     options: Option[];
+    sentence: string[]; // mảng từ đúng
     explanation: string;
 }
 
@@ -19,6 +20,6 @@ interface AnswerDTO {
     questionId: number;
     playerId: number;
     topicId: number;
-    answer: string;
+    answer: string[];
     optionId: number;
 }
