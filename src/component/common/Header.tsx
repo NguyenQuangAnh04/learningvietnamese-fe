@@ -31,7 +31,6 @@ export default function Header() {
                     {/* <a href="#" className="hover:text-blue-200 transition">Lessons</a> */}
 
                     <a href="/profile" className="hover:text-blue-200 transition">Profile</a>
-                    <a href="/games" className="hover:text-blue-200 transition">Games</a>
                     {/* <a href="#" className="hover:text-blue-200 transition">Progress</a> */}
                     <button onClick={() => handleLogout()}
                         className="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition">LOG OUT</button>

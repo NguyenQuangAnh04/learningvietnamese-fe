@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { submit } from "../service/gameService";
+import { AnswerDTO } from "../types/Question";
 
 export function useSubmitAnswer() {
     const useQuery = useQueryClient();

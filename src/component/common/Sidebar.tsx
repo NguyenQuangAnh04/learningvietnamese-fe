@@ -3,7 +3,7 @@ import {
   faChartLine,
   faCog,
   faFileAlt,
-  faGlobe,
+  faGamepad,
   faHome,
   faSignOutAlt,
   faUsers,
@@ -19,8 +19,7 @@ export default function Sidebar() {
     { name: "Dashboard", link: "/admin/dashboard", icon: faChartLine },
     { name: "Users", link: "/admin/users", icon: faUsers },
     { name: "Lessons", link: "/admin/lessons", icon: faBook },
-    // { name: "Games", link: "/admin/games", icon: faGamepad },
-    { name: "Topics", link: "/admin/topics", icon: faGlobe },
+    { name: "Games", link: "/admin/games", icon: faGamepad },
     { name: "Vocabulary", link: "/admin/vocabularies", icon: faVolumeUp },
     { name: "Reports", link: "/admin/reports", icon: faFileAlt },
   ];

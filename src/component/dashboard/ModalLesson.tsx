@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useCreateLesson } from '../../hooks/useCreateLesson';
 import { useUpdateLesson } from '../../hooks/useUpdateLesson';
 import { LessonDTO } from '../../types/Lession';
-import { on } from 'events';
 
 interface ModalLessonProps {
     isOpen: boolean;
@@ -31,18 +30,18 @@ export default function ModalLesson({ isOpen, onClose, lesson }: ModalLessonProp
     }
     const [formData, setFormData] = useState<LessonDTO>({
         id: lesson ? lesson.id : 0,
-        title: lesson ? lesson.title : '' ,
+        title: lesson ? lesson.title : '',
         describe: lesson ? lesson.describe : '',
-        level: lesson ? lesson.level : '',
+        level: lesson ? lesson.level : 'Beginner',
         content: lesson ? lesson.content : '',
         video_url: lesson ? lesson.video_url : '',
         time: lesson ? lesson.time : '',
         vocabularies: [],
         created: '',
-        updated: ''
+        updated: '',
+        gameCount: 0
 
     });
-
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -51,7 +50,7 @@ export default function ModalLesson({ isOpen, onClose, lesson }: ModalLessonProp
             [name]: value
         }));
     };
-
+    console.log(formData);
     if (!isOpen) return null;
 
 
@@ -104,12 +103,12 @@ export default function ModalLesson({ isOpen, onClose, lesson }: ModalLessonProp
                                         <select
                                             name="level"
                                             value={formData.level}
-                                            onChange={handleInputChange}
+                                            onChange={(e) => handleInputChange(e)}
                                             className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-0   text-sm font-medium tracking-tight"
                                         >
-                                            <option value="beginner">Beginner</option>
-                                            <option value="intermediate">Intermediate</option>
-                                            <option value="advanced">Advanced</option>
+                                            <option value="Beginner">Beginner</option>
+                                            <option value="Intermediate">Intermediate</option>
+                                            <option value="Advanced">Advanced</option>
                                         </select>
                                     </div>
 
@@ -120,7 +119,7 @@ export default function ModalLesson({ isOpen, onClose, lesson }: ModalLessonProp
                                         Description *
                                     </label>
                                     <textarea
-                                    name='describe'
+                                        name='describe'
                                         value={formData.describe}
                                         onChange={handleInputChange}
                                         rows={3}
@@ -180,7 +179,6 @@ export default function ModalLesson({ isOpen, onClose, lesson }: ModalLessonProp
 
                 </div>
 
-                {/* Footer */}
                 <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
                     <button
                         onClick={onClose}

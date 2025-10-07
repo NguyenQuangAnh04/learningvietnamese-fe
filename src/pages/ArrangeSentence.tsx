@@ -9,11 +9,12 @@ import ReactConfetti from "react-confetti";
 import { useParams } from "react-router-dom";
 import { useWindowSize } from "react-use";
 import { startGame, submit } from "../service/gameService";
+import { AnswerDTO, Question } from "../types/Question";
 
 
 
 export default function ArrangeSentence() {
-    const { gameId, topicId } = useParams();
+    const { nameGame, lessonId } = useParams();
     const { width, height } = useWindowSize();
 
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -23,18 +24,18 @@ export default function ArrangeSentence() {
     const [isCorrect, setIsCorrect] = useState(false);
     const [playerGameId, setPlayerGameId] = useState<number>(0);
     const [typeGame, setTypeGame] = useState<string>("");
-
+    const [gameId, setGameId] = useState<number>(0);
     const shuffle = (arr: string[]) => [...arr].sort(() => Math.random() - 0.5);
 
     // fetch dữ liệu
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await startGame(Number(gameId), Number(topicId));
+                const res = await startGame(nameGame, Number(lessonId));
                 setQuestions(res.data.questions);
                 setPlayerGameId(res.data.playerId);
                 setTypeGame(res.data.type);
-
+                setGameId(res.data.gameId);
                 // tính index câu tiếp theo
                 const lastQuestionId = res.data.lastQuestionId;
                 const nextIndex = res.data.questions.findIndex(
@@ -46,7 +47,7 @@ export default function ArrangeSentence() {
             }
         };
         fetchData();
-    }, [gameId, topicId]);
+    }, [nameGame, lessonId]);
 
     useEffect(() => {
         if (questions.length > 0) {
@@ -237,7 +238,7 @@ export default function ArrangeSentence() {
                                 onClick={() => handleSubmitAnswer({
                                     gameId: Number(gameId),
                                     questionId: questions[currentQuestionIndex].questionId,
-                                    topicId: Number(topicId),
+                                    lessonId: Number(lessonId),
                                     playerId: playerGameId,
                                     answer: words,
                                     optionId: 0

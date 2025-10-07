@@ -1,317 +1,254 @@
-import { faCheck, faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { faX } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
 import Select from "react-select";
-import { useQueryLesson } from '../../hooks/useLesson';
-import { VocabularyDTO } from '../../types/Lession';
-
-interface VocabularyFormData {
-  word: string;
-  meaning: string;
-  pronunciation: string;
-}
+import { toast } from "react-toastify";
+import { useAddVocabulary } from "../../hooks/useAddVocabulary";
+import { useImportExcelVocabulary } from "../../hooks/useImportExcelVocabulary";
+import { useQueryLesson } from "../../hooks/useLesson";
+import { useUpdateVocabulary } from "../../hooks/useUpdateVocabulary";
+import { VocabularyDTO } from "../../types/Lession";
 
 interface ModalVocabularyProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
-  vocabulary?: VocabularyDTO;
 }
 
-export default function ModalVocabulary({ isOpen, onClose, vocabulary }: ModalVocabularyProps) {
-  const [vocabularyList, setVocabularyList] = useState<VocabularyFormData[]>([
-    { word: '', meaning: '', pronunciation: '' }
-  ]);
-  const [errors, setErrors] = useState<Record<number, Record<string, string>>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data } = useQueryLesson();
-  const lessons = data?.lesson || [];
-  const [lessonId, setLessonId] = useState<number | "">("");
+export default function ModalVocabulary({ isOpen = true, onClose }: ModalVocabularyProps) {
+  const { mutateAsync: mutateImportExcel } = useImportExcelVocabulary();
+  const { mutateAsync: mutateAddVocabulary } = useAddVocabulary();
+  const { mutateAsync: mutateUpdateVocabulary } = useUpdateVocabulary();
 
-
-  const handleInputChange = (index: number, field: keyof VocabularyFormData, value: string | number) => {
-    setVocabularyList(prev => prev.map((item, i) =>
-      i === index ? { ...item, [field]: value } : item
-    ));
-
-  };
-
-  const addVocabulary = () => {
-    setVocabularyList(prev => [
-      ...prev,
-      { word: '', meaning: '', pronunciation: '' }
-    ]);
-  };
-
-  const removeVocabulary = (index: number) => {
-    if (vocabularyList.length > 1) {
-      setVocabularyList(prev => prev.filter((_, i) => i !== index));
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[index];
-        return newErrors;
-      });
+  const [vocabulay, setVocabulary] = useState<VocabularyDTO[]>([]);
+  const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const res = await mutateImportExcel(file);
+      setVocabulary(res.data);
     }
-  };
-
-  const validateForm = () => {
-    const newErrors: Record<number, Record<string, string>> = {};
-    let isValid = true;
-
-    vocabularyList.forEach((vocab, index) => {
-      const itemErrors: Record<string, string> = {};
-
-      if (!vocab.word.trim()) {
-        itemErrors.word = 'Vietnamese word is required';
-        isValid = false;
-      }
-
-      if (!vocab.meaning.trim()) {
-        itemErrors.meaning = 'English meaning is required';
-        isValid = false;
-      }
-
-      if (!vocab.pronunciation.trim()) {
-        itemErrors.pronunciation = 'Pronunciation is required';
-        isValid = false;
-      }
-
-
-
-      if (Object.keys(itemErrors).length > 0) {
-        newErrors[index] = itemErrors;
-      }
-    });
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
+  }
+  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+  const { data: lessonData } = useQueryLesson();
+  const handleChangeInput = (index: number, field: keyof VocabularyDTO, value: string) => {
+    setVocabulary(prev => prev.map((item, i) => i === index ? {
+      ...item,
+      [field]: value
+    } : item));
+  }
+  console.log(vocabulay);
+  const handleSubmit = async () => {
     try {
-      // await onSave(vocabularyList);
-      onClose();
-    } catch (error) {
-      console.error('Error saving vocabularies:', error);
-    } finally {
-      setIsSubmitting(false);
+      if (vocabulay.length > 0) {
+        await mutateAddVocabulary({ vocabularyDTO: vocabulay, lessonId: selectedLessonId || 0 });
+        toast.success("Vocabularies added successfully");
+        onClose();
+      }
+    } catch (error: any) {
+      console.error("Error adding vocabularies:", error.message);
     }
-  };
+  }
+  console.log(selectedLessonId);
+  const verifyVocabulary = () => {
+    if (selectedLessonId === null) { toast.error("Please select a lesson"); }
 
-
-  const options = lessons.map(lesson => ({
-    value: lesson.id,
-    label: lesson.title
-  }));
-  const handleExport = async () => {
-    try {
-
-      const link = document.createElement("a");
-      link.setAttribute("download", "vocabularies.xlsx");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed", error);
-    }
-  };
-
+  }
   if (!isOpen) return null;
-
+  const options = lessonData?.lesson?.map(l => ({
+    value: l.id,
+    label: l.title
+  }))
+  console.log(lessonData);
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="w-full max-w-6xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              {vocabulary ? 'Edit Vocabulary' : 'Add New Vocabularies'}
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {vocabulary
-                ? 'Update vocabulary information'
-                : `Create ${vocabularyList.length} vocabulary ${vocabularyList.length > 1 ? 'entries' : 'entry'}`
-              }
-            </p>
+            <h2 className="text-xl font-semibold text-gray-900">Add Vocabularies</h2>
+            <p className="text-sm text-gray-600 mt-1">Add one or multiple vocabulary entries. You can also import from Excel.</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white/60 rounded-full transition-all duration-200"
           >
-            <FontAwesomeIcon icon={faTimes} className="text-lg" />
+            <FontAwesomeIcon icon={faX} className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className='flex justify-between'>
-              <div>
+        <div className="p-6 space-y-6 max-h-[calc(90vh-180px)] overflow-y-auto">
+
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Select Lesson <span className="text-red-500">*</span>
+                </label>
                 <Select
                   options={options}
-                  onChange={(option) =>
-                    setLessonId(option ? option.value : "")
-                  }
-                  placeholder="Chọn bài học..."
+                  onChange={(option) => setSelectedLessonId(option ? option.value : null)}
+                  placeholder="Choose a lesson..."
+                  className="w-full"
                   isSearchable
-                  className="w-64"
+                  isClearable
+
                 />
               </div>
-              <button
-                type="button"
-                onClick={handleExport}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
-              >
-                Export Excel
-              </button>
 
+              <div className="flex flex-col">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Import File
+                </label>
+                <label
+                  htmlFor="fileInput"
+                  className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium text-center transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Import Excel
+                </label>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  id="fileInput"
+                  onChange={handleImportExcel}
+                  className="hidden"
+                />
+              </div>
             </div>
 
-            {vocabularyList.map(
-              (vocab, index) =>
-              (
-                <div key={index} className="border border-gray-200 rounded-xl p-6 relative">
-                  {vocabularyList.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeVocabulary(index)}
-                      className="absolute top-4 right-4 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors duration-200"
-                      title="Remove this vocabulary"
-                    >
-                      <FontAwesomeIcon icon={faTrash} className="text-sm" />
-                    </button>
-                  )}
-
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Vocabulary {index + 1}
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Vietnamese Word */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Vietnamese Word <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={vocab.word}
-                          onChange={(e) => handleInputChange(index, 'word', e.target.value)}
-                          placeholder="Enter Vietnamese word..."
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent text-lg font-medium transition-colors duration-200 ${errors[index]?.word ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                            }`}
-                        />
-
-                      </div>
-                    </div>
-
-                    {/* English Meaning */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        English Meaning <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={vocab.meaning}
-                        onChange={(e) => handleInputChange(index, 'meaning', e.target.value)}
-                        placeholder="Enter English meaning..."
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent transition-colors duration-200 ${errors[index]?.meaning ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                          }`}
-                      />
-                      {errors[index]?.meaning && (
-                        <p className="text-red-500 text-sm mt-1">{errors[index].meaning}</p>
-                      )}
-                    </div>
-
-                    {/* Pronunciation */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Pronunciation <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={vocab.pronunciation}
-                        onChange={(e) => handleInputChange(index, 'pronunciation', e.target.value)}
-                        placeholder="Enter pronunciation guide..."
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent italic transition-colors duration-200 ${errors[index]?.pronunciation ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                          }`}
-                      />
-                      {errors[index]?.pronunciation && (
-                        <p className="text-red-500 text-sm mt-1">{errors[index].pronunciation}</p>
-                      )}
-                      <p className="text-xs text-gray-500 mt-1">
-                        Example: "sin chao" for "Xin chào"
-                      </p>
-                    </div>
-
-
-                  </div>
-
-                  {vocab.word && vocab.meaning && (
-                    <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-                      <h4 className="text-sm font-medium text-blue-800 mb-2">Preview</h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-semibold text-gray-900">{vocab.word}</span>
-
-                        </div>
-                        <p className="text-gray-700">{vocab.meaning}</p>
-                        <p className="text-sm italic text-gray-500">{vocab.pronunciation}</p>
-
-                      </div>
-                    </div>
-                  )}
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <svg className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="text-sm">
+                  <p className="text-blue-800 font-medium">Excel Format:</p>
+                  <p className="text-blue-700">Columns: Vietnamese Word | English Meaning | Pronunciation</p>
                 </div>
-              ))}
-
-
-            {/* Add More Button - Only show in add mode */}
-            {!vocabulary && (
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={addVocabulary}
-                  className="px-6 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-[#007AFF] hover:text-[#007AFF] transition-colors duration-200 flex items-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faPlus} className="text-sm" />
-                  Add Another Vocabulary
-                </button>
               </div>
-            )}
-          </form>
+            </div>
+          </div>
+
+          {vocabulay.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Imported Vocabularies ({vocabulay.length})
+                </h3>
+                {/* <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+                  >
+                    Select All
+                  </button>
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-700 rounded-md transition-colors"
+                  >
+                    Clear All
+                  </button>
+                </div> */}
+              </div>
+
+              <div className="grid gap-4">
+                {vocabulay.map((item, index) => (
+                  <div key={item.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                        #{index + 1}
+                      </span>
+                      <button
+                        type="button"
+                        className="text-gray-400 hover:text-red-500 transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                          Vietnamese Word
+                        </label>
+                        <input
+                          className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Xin chào"
+                          onChange={(e) => handleChangeInput(index, 'word', e.target.value)}
+                          value={item.word}
+
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                          English Meaning
+                        </label>
+                        <input
+                          className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Hello"
+                          onChange={(e) => handleChangeInput(index, 'meaning', e.target.value)}
+                          value={item.meaning}
+
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                          Pronunciation
+                        </label>
+                        <input
+                          className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="sin chao"
+                          onChange={(e) => handleChangeInput(index, 'pronunciation', e.target.value)}
+                          value={item.pronunciation}
+
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {vocabulay.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No vocabularies yet</h3>
+              <p className="text-gray-500 mb-4">Import an Excel file to get started</p>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-          <div className="text-sm text-gray-500">
-            {vocabularyList.length} vocabulary {vocabularyList.length > 1 ? 'entries' : 'entry'} to save
+          <div className="text-sm text-gray-600">
+            {vocabulay.length > 0 && (
+              <span className="font-medium">{vocabulay.length} vocabularies ready to save</span>
+            )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors duration-200 font-medium"
-              disabled={isSubmitting}
+              className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200"
             >
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="px-6 py-2 bg-[#007AFF] hover:bg-[#0056CC] text-white rounded-lg font-medium flex items-center gap-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              type="button"
+
+              onClick={() => { handleSubmit(); verifyVocabulary(); }}
+              disabled={vocabulay.length === 0}
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
             >
-              {isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <FontAwesomeIcon icon={faCheck} className="text-sm" />
-                  {vocabulary ? 'Update' : `Create ${vocabularyList.length} ${vocabularyList.length > 1 ? 'Vocabularies' : 'Vocabulary'}`}
-                </>
-              )}
+              Save {vocabulay.length > 0 && `(${vocabulay.length})`}
             </button>
           </div>
         </div>

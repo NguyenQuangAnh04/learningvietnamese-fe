@@ -8,6 +8,8 @@ export interface LessonDTO {
     video_url: string;
     level: string;
     created: string;
+    gameCount: number;
+
     updated: string;
 }
 

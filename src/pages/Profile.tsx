@@ -1,17 +1,14 @@
-import { faArrowLeft, faBirthdayCake, faBookOpen, faCalendar, faFire, faGamepad, faLocationPin, faPen, faPhone, faTrophy, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faBirthdayCake, faBook, faCalendar, faFire, faGamepad, faLocationPin, faPen, faPhone, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserDTO } from "../types/User";
+import { getUserAchievement } from "../service/userAchievement";
 import { getInforUser } from "../service/userService";
+import { UserDTO } from "../types/User";
+import { UserAchievementDTO } from "../types/userAchiemenet";
 
 export default function Profile() {
-    const achievement = [
-        { title: "Total Score", value: "1,250", icon: faTrophy, color: "text-amber-600 bg-amber-100" },
-        { title: "Lessons Completed", value: "15", icon: faBookOpen, color: "text-emerald-600 bg-emerald-100" },
-        { title: "Games Played", value: "2", icon: faGamepad, color: "text-indigo-600 bg-indigo-100" },
-        { title: "Learning Streak", value: "7 days", icon: faFire, color: "text-red-600 bg-red-100" },
-    ];
+
     const [user, setUser] = useState<UserDTO | null>(null);
     useEffect(() => {
         const fetchUser = async () => {
@@ -24,15 +21,22 @@ export default function Profile() {
         }
         fetchUser()
     }, []);
-
+    const [achievement, setAchievement] = useState<UserAchievementDTO>();
+    useEffect(() => {
+        const fetchUserAchievement = async () => {
+            const res = await getUserAchievement();
+            setAchievement(res);
+        }
+        fetchUserAchievement();
+    }, []);
     const navigate = useNavigate();
     const parts = user && user.fullName.trim().split(/\s+/);
     const first = parts && parts[parts.length - 2]?.charAt(0).toUpperCase() || "";
     const last = parts && parts[parts.length - 1]?.charAt(0).toUpperCase() || "";
     return (
-        <div className="bg-[#141f25] min-h-screen text-white py-10">    
+        <div className="bg-[#141f25] min-h-screen text-white py-10">
             <div className="max-w-[1200px] mx-auto space-y-6 px-4">
-                <button onClick={()=> navigate("/")}><FontAwesomeIcon icon={faArrowLeft}/></button>
+                <button onClick={() => navigate("/")}><FontAwesomeIcon icon={faArrowLeft} /></button>
                 <div className="flex justify-between items-center gap-2">
                     <div>
                         <h1 className="text-2xl font-bold">Profile</h1>
@@ -66,7 +70,7 @@ export default function Profile() {
                                 <h1 className="text-2xl font-semibold">{user.fullName}</h1>
                                 <p className="text-gray-400 text-sm">{user.email}</p>
                                 <div className="flex gap-4 text-sm text-gray-400 mt-2">
-                                    <span>{achievement[0].value} points</span>
+                                    {/* <span>{achievement[0].value} points</span> */}
                                     <span>Member since Aug 1, 2025</span>
                                 </div>
                                 <p className="mt-3 text-sm text-gray-300 leading-relaxed">
@@ -95,23 +99,50 @@ export default function Profile() {
                 </div>
 
                 <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {achievement.map((item, index) => (
-                        <div
-                            className="border border-gray-700 rounded-xl p-4 bg-white/5 hover:bg-white/10 transition"
-                            key={index}
-                        >
-                            <div className="flex items-center gap-3">
-                                <span
-                                    className={`w-10 h-10 flex items-center justify-center rounded-full ${item.color}`}
-                                >
-                                    <FontAwesomeIcon icon={item.icon} />
-                                </span>
-                                <p className="text-sm text-gray-300">{item.title}</p>
-                            </div>
-                            <p className="font-bold text-xl pl-12 mt-1">{item.value}</p>
+                    {/* Total Score */}
+                    <div className="border border-gray-700 rounded-xl p-4 bg-white/5 hover:bg-white/10 transition">
+                        <div className="flex items-center gap-3">
+                            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white">
+                                <FontAwesomeIcon icon={faStar} />
+                            </span>
+                            <p className="text-sm text-gray-300">Total Score</p>
                         </div>
-                    ))}
+                        <p className="font-bold text-xl pl-12 mt-1">{achievement?.totalScore}</p>
+                    </div>
+
+                    <div className="border border-gray-700 rounded-xl p-4 bg-white/5 hover:bg-white/10 transition">
+                        <div className="flex items-center gap-3">
+                            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 text-white">
+                                <FontAwesomeIcon icon={faBook} />
+                            </span>
+                            <p className="text-sm text-gray-300">Lessons Completed</p>
+                        </div>
+                        <p className="font-bold text-xl pl-12 mt-1">15</p>
+                    </div>
+
+                    {/* Games Played */}
+                    <div className="border border-gray-700 rounded-xl p-4 bg-white/5 hover:bg-white/10 transition">
+                        <div className="flex items-center gap-3">
+                            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 text-white">
+                                <FontAwesomeIcon icon={faGamepad} />
+                            </span>
+                            <p className="text-sm text-gray-300">Games Played</p>
+                        </div>
+                        <p className="font-bold text-xl pl-12 mt-1">{achievement?.totalGame}</p>
+                    </div>
+
+                    {/* Learning Streak */}
+                    <div className="border border-gray-700 rounded-xl p-4 bg-white/5 hover:bg-white/10 transition">
+                        <div className="flex items-center gap-3">
+                            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 text-white">
+                                <FontAwesomeIcon icon={faFire} />
+                            </span>
+                            <p className="text-sm text-gray-300">Learning Streak</p>
+                        </div>
+                        <p className="font-bold text-xl pl-12 mt-1">7 days</p>
+                    </div>
                 </section>
+
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <section className="border border-gray-700 rounded-xl p-5 bg-white/5">

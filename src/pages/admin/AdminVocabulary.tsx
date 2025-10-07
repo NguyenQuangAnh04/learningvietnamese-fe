@@ -1,21 +1,58 @@
-import { faBook, faEdit, faEye, faPlus, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faCheck, faEdit, faPlus, faSearch, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
+import ModalVocabulary from '../../component/dashboard/ModalVocabulary';
+import { useQueryLesson } from '../../hooks/useLesson';
+import { useUpdateVocabulary } from '../../hooks/useUpdateVocabulary';
 import { useVocabularyQuery } from '../../hooks/useVocabulay';
 import { VocabularyDTO } from '../../types/Lession';
-import ModalVocabulary from '../../component/dashboard/ModalVocabulary';
 
 export default function AdminVocabulary() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [selectedVocab, setSelectedVocab] = useState<VocabularyDTO>();
     const [page, setPage] = useState(0);
-    const { data } = useVocabularyQuery(searchTerm, page);
+    const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingData, setEditingData] = useState<Partial<VocabularyDTO>>();
+    const handleChange = (field: keyof VocabularyDTO, value: string) => {
+        setEditingData(prev => ({
+            ...prev,
+            [field]: value,
+        }));
+    }; const { data } = useVocabularyQuery(searchTerm, selectedLesson || undefined, page);
     const [showModalAddVocab, setShowModalAddVocab] = useState(false);
-    const [showModalEditVocab, setShowModalEditVocab] = useState(false);
-    const [selectedVocabulary, setSelectedVocabularly] = useState<VocabularyDTO | null>(null);
-    
+    const { mutateAsync: mutateUpdateVocabulary } = useUpdateVocabulary();
+    const handleEditClick = (vocab: VocabularyDTO) => {
+        setEditingId(vocab.id);
+        setEditingData({ ...vocab });
+    };
+
+    const handleUpdateVocabulary = async () => {
+        try {
+            if (!editingId) {
+                toast.error("No vocabulary selected for update");
+                return;
+            }
+            console.log("Updating vocabulary with data:", editingData);
+            await mutateUpdateVocabulary(editingData as VocabularyDTO);
+            setEditingId(null);
+            toast.success("Vocabulary updated successfully");
+        } catch (error: any) {
+            console.error("Error updating vocabulary:", error?.data?.message || error);
+            toast.error("Failed to update vocabulary");
+        }
+    };
+
+    const { data: lessonData } = useQueryLesson();
+    const lessonOptions = lessonData && lessonData.lesson.map(l => ({
+        value: l.id,
+        label: l.title
+    }))
     const vocabularies = data?.vocabularies || [];
+
     return (
         <div className=" p-2">
             {/* Header */}
@@ -46,13 +83,21 @@ export default function AdminVocabulary() {
                             className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent text-sm font-medium tracking-tight"
                         />
                     </div>
-                </div>
 
-               
+                    <div>
+                        <Select
+                            options={lessonOptions}
+                            onChange={(option) => { setSelectedLesson(option ? option.value : null); setPage(0); }}
+                            placeholder="Filter by Lesson"
+                            className="w-full md:w-64 focus:ring-0 focus:outline-none"
+                            isSearchable
+                            isClearable
+                        />
+                    </div>
+                </div>
             </div>
 
 
-            {/* Vocabulary Table */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
@@ -74,34 +119,61 @@ export default function AdminVocabulary() {
                                     <td className="py-4 px-6">
                                         <div className="flex items-center gap-3">
                                             <div>
-                                                <h3 className="font-semibold text-gray-900 text-lg">{vocab.word}</h3>
+                                                {
+                                                    editingId === vocab.id ? (
+                                                        <input className='border border-gray-200 rounded' value={editingData?.word} onChange={(e) => handleChange('word', e.target.value)} />
+                                                    ) : (
+                                                        <h3 className="font-semibold text-gray-900 text-lg">{vocab.word}</h3>
+                                                    )
+                                                }
                                             </div>
                                         </div>
                                     </td>
                                     <td className="py-4 px-6">
-                                        <span className="font-medium text-gray-900">{vocab.meaning}</span>
+                                        {editingId === vocab.id ? (
+                                            <input className='border border-gray-200 rounded' value={editingData?.meaning} onChange={(e) => handleChange('meaning', e.target.value)} />
+                                        ) : (
+                                            <span className="text-gray-700">{vocab.meaning}</span>
+                                        )}
                                     </td>
                                     <td className="py-4 px-6">
-                                        <span className="text-gray-500 italic">{vocab.pronunciation}</span>
+                                        {editingId === vocab.id ? (
+                                            <input className='border border-gray-200 rounded' value={editingData?.pronunciation} onChange={(e) => handleChange('pronunciation', e.target.value)} />
+                                        ) : (
+                                            <span className="text-gray-700">{vocab.pronunciation}</span>
+                                        )}
                                     </td>
                                     <td className="py-4 px-6">
-                                        <div className="flex items-center  gap-2">
-                                            <button
-                                                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150"
-                                                title="View details"
-                                            >
-                                                <FontAwesomeIcon icon={faEye} className="text-sm" />
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedVocab(vocab);
-                                                    setShowModal(true);
-                                                }}
-                                                className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-150"
-                                                title="Edit vocabulary"
-                                            >
-                                                <FontAwesomeIcon icon={faEdit} className="text-sm" />
-                                            </button>
+                                        <div className="flex items-center gap-2">
+                                            {editingId === vocab.id ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => {
+                                                            handleUpdateVocabulary();
+                                                        }}
+                                                        className="px-2 py-1 bg-green-500 text-white rounded"
+                                                    >
+                                                        <FontAwesomeIcon icon={faCheck} className="text-[10px]" />
+
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setEditingId(null)}
+                                                        className="px-2 py-1 bg-gray-300 rounded"
+                                                    >
+                                                        <FontAwesomeIcon icon={faTimes} className="text-[10px]" />
+
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button
+                                                    onClick={() => { handleEditClick(vocab); }}
+                                                    className="px-2 py-1 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-150"
+                                                    title="Edit vocabulary"
+                                                >
+                                                    <FontAwesomeIcon icon={faEdit} className="text-[10px]" />
+                                                </button>
+                                            )}
+
                                             <button
                                                 className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150"
                                                 title="Delete vocabulary"
@@ -116,7 +188,6 @@ export default function AdminVocabulary() {
                     </table>
                 </div>
 
-                {/* Empty State */}
                 {vocabularies.length === 0 && (
                     <div className="text-center py-12">
                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -133,7 +204,6 @@ export default function AdminVocabulary() {
                 )}
             </div>
 
-            {/* Modal Placeholder */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
@@ -182,7 +252,7 @@ export default function AdminVocabulary() {
                 </div>
             )}
             {showModalAddVocab && (
-                <ModalVocabulary  isOpen={showModalAddVocab} onClose={() => setShowModalAddVocab(false)}/>
+                <ModalVocabulary isOpen={showModalAddVocab} onClose={() => setShowModalAddVocab(false)} />
             )}
         </div>
     );

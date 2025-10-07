@@ -1,14 +1,14 @@
-import axios from "axios";
+import { AnswerDTO } from "../types/Question";
 import api from "./axiosClient";
 
-export function startGame(gameId?: number, topicId?: number) {
-    return api.post(`/game/${gameId}/topics/${topicId}/start`)
+export function startGame(typeGame?: string, lessonId?: number) {
+    return api.post(`/game/${typeGame}/start/${lessonId}`)
 }
 
 export function submit(answerDTO: AnswerDTO) {
     return api.post("/game/submit_answer", answerDTO);
 }
 
-export function findAllGame() {
-    return axios.get("http://localhost:8080/api/game")
+export function findGameByLessonId(lessonId: number | null, page?: number) {
+    return api.get(`/game`, { params: { page, lessonId } });    
 }

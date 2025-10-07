@@ -17,14 +17,11 @@ interface Topic {
 export default function Topic() {
     const [topics, setTopics] = useState<Topic[]>([]);
     const [loading, setLoading] = useState(true);
-    const [playAgain, setPlayAgain] = useState(false);
-    const [score, setScore] = useState(false);
-    const { typeGame } = useParams();
-    const navigate = useNavigate();
+    const { lessonId } = useParams();
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await api.get(`/topic/${typeGame}`)
+                const res = await api.get(`/topic/${lessonId}`)
 
                 setTopics(res.data);
             } catch (error) {
@@ -35,10 +32,9 @@ export default function Topic() {
         };
 
         fetchTopics();
-    }, [typeGame]);
-
+    }, [lessonId]);
+    const navigate = useNavigate();
     if (loading) return <p className="text-center text-white">Loading...</p>;
-    console.log(topics)
     return (
         <div className="bg-[#141f25] min-h-screen text-white">
             <div className="max-w-[1200px] mx-auto w-full p-4">
@@ -50,7 +46,7 @@ export default function Topic() {
                 </button>
                 <h2 className="text-2xl font-bold mt-2">Choose a Topic</h2>
 
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 mt-4">
                     {topics.map((topic, idx) => (
                         <div
                             key={idx}
@@ -63,38 +59,7 @@ export default function Topic() {
                                     {topic.description || "No description"}
                                 </p>
                             </div>
-                            {topic.completed ? (
-                                <div className="flex items-center gap-2">
-                                    <span className="px-4 py-2 bg-green-500 text-white rounded-lg">
-                                        Score: {topic.score}
-                                    </span>
-                                    <button
-                                        onClick={() => {
-                                            if (typeGame === "AS") {
-                                                navigate(`/quiz/game/${topic.gameId}/arrange-sentence/${topic.id}`);
-                                            } else {
-                                                navigate(`/quiz/game/${topic.gameId}/topic/${topic.id}`);
-                                            }
-                                        }}
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                                    >
-                                        Play Again
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={() => {
-                                        if (typeGame === "AS") {
-                                            navigate(`/quiz/game/${topic.gameId}/arrange-sentence/${topic.id}`);
-                                        } else {
-                                            navigate(`/quiz/game/${topic.gameId}/topic/${topic.id}`);
-                                        }
-                                    }}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                                >
-                                    Play
-                                </button>
-                            )}
+                            <button onClick={() => navigate(`/games/${topic.id}`)} className="bg-green-600 px-4 py-2 rounded">Play</button>
 
                         </div>
                     ))}

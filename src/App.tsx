@@ -4,7 +4,10 @@ import './App.css';
 import PrivateRoute from './component/PrivateRoute';
 import Admin from './pages/admin/Admin';
 import AdminLesson from './pages/admin/AdminLesson';
+import AdminQuestion from './pages/admin/AdminQuestion';
+import AdminTopic from './pages/admin/AdminTopic';
 import AdminUser from './pages/admin/AdminUser';
+import AdminVocabulary from './pages/admin/AdminVocabulary';
 import ArrangeSentence from './pages/ArrangeSentence';
 import AvatarSetup from './pages/AvatarSetup';
 import ChangePassword from './pages/ChangePassword';
@@ -19,7 +22,7 @@ import MultipleGame from './pages/MultipleGame';
 import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 import Topic from './pages/Topic';
-import AdminVocabulary from './pages/admin/AdminVocabulary';
+import AdminEditQuestion from './pages/admin/AdminEditQuestion';
 
 function App() {
   return (
@@ -47,7 +50,7 @@ function App() {
             <Profile />
           </PrivateRoute>
         } />
-        <Route path="/games" element={
+        <Route path="/game/:lessonId" element={
           <PrivateRoute>
             <Game />
           </PrivateRoute>
@@ -57,7 +60,7 @@ function App() {
             <LessonVideo />
           </PrivateRoute>
         } />
-        <Route path="/quiz/game/:gameId/arrange-sentence/:topicId" element={
+        <Route path="/quiz/game/:nameGame/as/:lessonId" element={
           <PrivateRoute>
             <ArrangeSentence />
           </PrivateRoute>
@@ -67,7 +70,7 @@ function App() {
             <EditProfile />
           </PrivateRoute>
         } />
-        <Route path="/topic/:typeGame" element={
+        <Route path="/topic/:name/:lessonId" element={
           <PrivateRoute>
             <Topic />
           </PrivateRoute>
@@ -77,7 +80,7 @@ function App() {
             <MultipleGame />
           </PrivateRoute>
         } /> */}
-        <Route path="/quiz/game/:gameId/topic/:topicId" element={
+        <Route path="/quiz/game/:nameGame/mc/:lessonId" element={
           <PrivateRoute>
             <MultipleGame />
           </PrivateRoute>
@@ -92,7 +95,8 @@ function App() {
           <Route path="lessons" element={<AdminLesson />} />  {/* /admin/lessons */}
           <Route path='users' element={<AdminUser />} />
           <Route path='vocabularies' element={<AdminVocabulary />} />
-
+          <Route path='topics' element={<AdminTopic />} />
+          <Route path='games' element={<AdminQuestion />} />
         </Route>
 
 

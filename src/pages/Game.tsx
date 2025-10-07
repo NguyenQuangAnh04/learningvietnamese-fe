@@ -1,21 +1,27 @@
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import Header from '../component/common/Header'
-import { findAllGame } from '../service/gameService'
+import { findGameByLessonId } from '../service/gameService'
 import { GameDTO } from '../types/Game'
-import { useNavigate } from 'react-router-dom'
 
 export default function Game() {
+    const { lessonId } = useParams()
+    const navigate = useNavigate();
     const [games, setGames] = useState<GameDTO[]>([]);
+    const idlesson = Number(lessonId);
     useEffect(() => {
         const fetchData = async () => {
-            const res = await findAllGame();
-            setGames(res.data)
-        }
-        fetchData()
-    }, [])
-    const navigate = useNavigate()
+            if (!lessonId) {
+                navigate("/");
+            }
+            const res = await findGameByLessonId(idlesson);
+            setGames(res.data.games);
+
+        };
+        fetchData();
+    }, [lessonId]);
     return (
         <div className="bg-[#141f25] min-h-screen text-white">
             <Header />
@@ -33,22 +39,56 @@ export default function Game() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {games.map((item) => (
-                        <div
-                            key={item.id}
-                            className="flex flex-col items-center bg-[#1b262c] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition transform "
-                        >
-                            <h2 className="font-semibold text-lg mb-2">{item.title}</h2>
-                            <p className="text-sm text-gray-400 text-center flex-1">
-                                {item.description}
-                            </p>
-                            <button onClick={() => navigate(`/topic/${item.type}`)}
-                                className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-xl transition"
+                    {
+                        games ? games.map((game) => (
+                            <div
+                                className="flex flex-col items-center bg-[#1b262c] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition transform "
                             >
-                                Start Game
-                            </button>
-                        </div>
-                    ))}
+                                <h2 className="font-semibold text-lg mb-2">{game.title}</h2>
+                                <p className="text-sm text-gray-400 text-center flex-1">
+                                    {game.description}
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        const slug = game.title.replace(/\s+/g, "-");
+                                        (game.type === 'MC' || game.type === 'LS') ? navigate(`/quiz/game/${slug.toLowerCase()}/mc/${lessonId}`) : navigate(`/quiz/game/${slug.toLowerCase()}/as/${lessonId}`)
+                                    }}
+                                    className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-xl transition"
+                                >
+                                    Start Game
+                                </button>
+                            </div>
+                        )) : <div>No games available</div>
+                    }
+
+                    {/* <div
+                        className="flex flex-col items-center bg-[#1b262c] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition transform "
+                    >
+                        <h2 className="font-semibold text-lg mb-2">Listen & Choose</h2>
+                        <p className="text-sm text-gray-400 text-center flex-1">
+                            Listen to audio and select the correct answer.
+                        </p>
+                        <button
+                            onClick={() => navigate(`/quiz/game/3/mutiple/${lessonId}`)}
+                            className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-xl transition"
+                        >
+                            Start Game
+                        </button>
+                    </div>
+
+                    <div
+                        className="flex flex-col items-center bg-[#1b262c] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition transform "
+                    >
+                        <h2 className="font-semibold text-lg mb-2">Arrange Sentence</h2>
+                        <p className="text-sm text-gray-400 text-center flex-1">
+                            Put words in the correct order.
+                        </p>
+                        <button onClick={() => navigate(`/quiz/game/4/arrange-sentence/${lessonId}`)}
+                            className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-xl transition"
+                        >
+                            Start Game
+                        </button>
+                    </div> */}
                 </div>
             </div>
         </div>

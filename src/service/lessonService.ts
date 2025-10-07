@@ -2,8 +2,8 @@ import { LessonsResponse } from "../hooks/useLesson";
 import { LessonDTO } from "../types/Lession";
 import api from "./axiosClient";
 
-export async function getLessons(page: number,title: string, level: string): Promise<LessonsResponse> {
-    const res = await api.get<LessonsResponse>('/lesson', { params: {page, title, level } });
+export async function getLessons(page: number,title: string, level: string, size: number): Promise<LessonsResponse> {
+    const res = await api.get<LessonsResponse>('/lesson', { params: {page, title, level,size } });
     return res.data;
 }
 

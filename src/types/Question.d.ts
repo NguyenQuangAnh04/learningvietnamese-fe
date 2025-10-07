@@ -5,13 +5,16 @@ interface Option {
     correct: boolean;
 }
 
-interface Question {
+export interface Question {
     id: number;
     questionText: string;
     image_url: string;
+    gameId: number;
+    lessonId: number;
     questionId: number;
+    audio_url: string;
     options: Option[];
-    sentence: string[]; // mảng từ đúng
+    sentence: string[];
     explanation: string;
 }
 
@@ -19,7 +22,7 @@ interface AnswerDTO {
     gameId: number;
     questionId: number;
     playerId: number;
-    topicId: number;
+    lessonId: number;
     answer: string[];
     optionId: number;
 }
