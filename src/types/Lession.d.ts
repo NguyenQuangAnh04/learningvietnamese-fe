@@ -9,7 +9,7 @@ export interface LessonDTO {
     level: string;
     created: string;
     gameCount: number;
-
+    progress: number;
     updated: string;
 }
 
@@ -20,4 +20,5 @@ interface VocabularyDTO {
     meaning: string;
     pronunciation: string;
     lessonId: number;
+    lesson:string;
 }

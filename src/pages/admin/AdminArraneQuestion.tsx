@@ -53,6 +53,7 @@ export default function AdminArrangeQuestion({
     const handleSave = async () => {
         try {
             await updateQuestion(questions[0].gameId, questions[0].lessonId, questions);
+            console.log(questions);
             toast.success("Questions updated successfully!");
             data = [];
             onClose();

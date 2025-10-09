@@ -1,6 +1,7 @@
 import { faArrowLeft, faBirthdayCake, faBook, faCalendar, faFire, faGamepad, faLocationPin, faPen, faPhone, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next"; // ✅ Import useTranslation
 import { useNavigate } from "react-router-dom";
 import { getUserAchievement } from "../service/userAchievement";
 import { getInforUser } from "../service/userService";
@@ -8,6 +9,7 @@ import { UserDTO } from "../types/User";
 import { UserAchievementDTO } from "../types/userAchiemenet";
 
 export default function Profile() {
+    const { t } = useTranslation(); // ✅ Thêm hook translation
 
     const [user, setUser] = useState<UserDTO | null>(null);
     useEffect(() => {
@@ -21,6 +23,7 @@ export default function Profile() {
         }
         fetchUser()
     }, []);
+
     const [achievement, setAchievement] = useState<UserAchievementDTO>();
     useEffect(() => {
         const fetchUserAchievement = async () => {
@@ -29,24 +32,27 @@ export default function Profile() {
         }
         fetchUserAchievement();
     }, []);
+
     const navigate = useNavigate();
     const parts = user && user.fullName.trim().split(/\s+/);
     const first = parts && parts[parts.length - 2]?.charAt(0).toUpperCase() || "";
     const last = parts && parts[parts.length - 1]?.charAt(0).toUpperCase() || "";
+
     return (
         <div className="bg-[#141f25] min-h-screen text-white py-10">
             <div className="max-w-[1200px] mx-auto space-y-6 px-4">
                 <button onClick={() => navigate("/")}><FontAwesomeIcon icon={faArrowLeft} /></button>
+
                 <div className="flex justify-between items-center gap-2">
                     <div>
-                        <h1 className="text-2xl font-bold">Profile</h1>
+                        <h1 className="text-2xl font-bold">{t('Profile')}</h1> {/* ✅ Translation */}
                         <p className=" text-[10px] sm:text-sm text-gray-400">
-                            Manage your personal information and preferences
+                            {t('Manage your personal information and preferences')} {/* ✅ Translation */}
                         </p>
                     </div>
                     <button onClick={() => navigate("/edit-profile")} className="flex items-center gap-[2px] sm:gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg text-[10px] sm:text-sm transition">
                         <FontAwesomeIcon icon={faPen} />
-                        Edit Profile
+                        {t('Edit Profile')} {/* ✅ Translation */}
                     </button>
                 </div>
 
@@ -70,8 +76,7 @@ export default function Profile() {
                                 <h1 className="text-2xl font-semibold">{user.fullName}</h1>
                                 <p className="text-gray-400 text-sm">{user.email}</p>
                                 <div className="flex gap-4 text-sm text-gray-400 mt-2">
-                                    {/* <span>{achievement[0].value} points</span> */}
-                                    <span>Member since Aug 1, 2025</span>
+                                    <span>{t('Member since')} Aug 1, 2025</span> {/* ✅ Translation */}
                                 </div>
                                 <p className="mt-3 text-sm text-gray-300 leading-relaxed">
                                     {user.bio}
@@ -105,7 +110,7 @@ export default function Profile() {
                             <span className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white">
                                 <FontAwesomeIcon icon={faStar} />
                             </span>
-                            <p className="text-sm text-gray-300">Total Score</p>
+                            <p className="text-sm text-gray-300">{t('Total Score')}</p> {/* ✅ Translation */}
                         </div>
                         <p className="font-bold text-xl pl-12 mt-1">{achievement?.totalScore}</p>
                     </div>
@@ -115,9 +120,9 @@ export default function Profile() {
                             <span className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 text-white">
                                 <FontAwesomeIcon icon={faBook} />
                             </span>
-                            <p className="text-sm text-gray-300">Lessons Completed</p>
+                            <p className="text-sm text-gray-300">{t('Lessons Completed')}</p> {/* ✅ Translation */}
                         </div>
-                        <p className="font-bold text-xl pl-12 mt-1">15</p>
+                        <p className="font-bold text-xl pl-12 mt-1">{achievement?.totalLesson}</p>
                     </div>
 
                     {/* Games Played */}
@@ -126,7 +131,7 @@ export default function Profile() {
                             <span className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 text-white">
                                 <FontAwesomeIcon icon={faGamepad} />
                             </span>
-                            <p className="text-sm text-gray-300">Games Played</p>
+                            <p className="text-sm text-gray-300">{t('Games Played')}</p> {/* ✅ Translation */}
                         </div>
                         <p className="font-bold text-xl pl-12 mt-1">{achievement?.totalGame}</p>
                     </div>
@@ -137,42 +142,41 @@ export default function Profile() {
                             <span className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 text-white">
                                 <FontAwesomeIcon icon={faFire} />
                             </span>
-                            <p className="text-sm text-gray-300">Learning Streak</p>
+                            <p className="text-sm text-gray-300">{t('Learning Streak')}</p> {/* ✅ Translation */}
                         </div>
-                        <p className="font-bold text-xl pl-12 mt-1">7 days</p>
+                        <p className="font-bold text-xl pl-12 mt-1">7 {t('days')}</p> {/* ✅ Translation */}
                     </div>
                 </section>
-
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <section className="border border-gray-700 rounded-xl p-5 bg-white/5">
                         <p className="flex gap-2 items-center mb-2 text-lg font-medium">
                             <FontAwesomeIcon icon={faUser} />
-                            Basic Information
+                            {t('Basic Information')} {/* ✅ Translation */}
                         </p>
                         <p className="text-gray-400 text-sm mb-4">
-                            Your personal details and contact information
+                            {t('Your personal details and contact information')} {/* ✅ Translation */}
                         </p>
                         <div className="divide-y divide-gray-700 text-sm">
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Full name</span>
+                                <span className="text-gray-400">{t('Full name')}</span> {/* ✅ Translation */}
                                 <span className="font-medium">{user?.fullName}</span>
                             </div>
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Email</span>
+                                <span className="text-gray-400">{t('Email')}</span> {/* ✅ Translation */}
                                 <span className="font-medium">{user?.email}</span>
                             </div>
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Phone</span>
+                                <span className="text-gray-400">{t('Phone')}</span> {/* ✅ Translation */}
                                 <span className="font-medium">{user?.phoneNumber}</span>
                             </div>
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Location</span>
+                                <span className="text-gray-400">{t('Location')}</span> {/* ✅ Translation */}
                                 <span className="font-medium">{user?.location}</span>
                             </div>
                         </div>
                         <div className="mt-4">
-                            <p className="text-gray-400">Bio</p>
+                            <p className="text-gray-400">{t('Bio')}</p> {/* ✅ Translation */}
                             <p className="text-sm text-gray-300 leading-relaxed">{user?.bio}</p>
                         </div>
                     </section>
@@ -180,26 +184,26 @@ export default function Profile() {
                     <section className="border border-gray-700 rounded-xl p-5 bg-white/5">
                         <p className="flex gap-2 items-center mb-2 text-lg font-medium">
                             <FontAwesomeIcon icon={faCalendar} />
-                            Personal Details
+                            {t('Personal Details')} {/* ✅ Translation */}
                         </p>
                         <p className="text-gray-400 text-sm mb-4">
-                            Additional personal information
+                            {t('Additional personal information')} {/* ✅ Translation */}
                         </p>
                         <div className="divide-y divide-gray-700 text-sm">
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Sex</span>
-                                <span className="font-medium">{user?.gender}</span>
+                                <span className="text-gray-400">{t('Sex')}</span> {/* ✅ Translation */}
+                                <span className="font-medium">{t(user?.gender || '')}</span> {/* ✅ Translation cho gender */}
                             </div>
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Birthday</span>
+                                <span className="text-gray-400">{t('Birthday')}</span> {/* ✅ Translation */}
                                 <span className="font-medium">{user?.birthdate}</span>
                             </div>
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Native language</span>
+                                <span className="text-gray-400">{t('Native language')}</span> {/* ✅ Translation */}
                                 <span className="font-medium">{user?.language}</span>
                             </div>
                             <div className="flex justify-between py-2">
-                                <span className="text-gray-400">Member since</span>
+                                <span className="text-gray-400">{t('Member since')}</span> {/* ✅ Translation */}
                                 <span className="font-medium">{user?.createdAt}</span>
                             </div>
                         </div>
@@ -208,5 +212,4 @@ export default function Profile() {
             </div>
         </div>
     );
-
 }

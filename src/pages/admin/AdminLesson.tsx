@@ -1,7 +1,9 @@
 import { faEdit, faEye, faPlus, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import ModalLesson from '../../component/dashboard/ModalLesson';
+import { useDeleteLesson } from '../../hooks/useDeleteLesson';
 import { useQueryLesson } from '../../hooks/useLesson';
 import { LessonDTO } from '../../types/Lession';
 
@@ -13,6 +15,7 @@ export default function AdminLesson() {
     const [showModal, setShowModal] = useState(false);
     const [page, setPage] = useState(0);
     const { data } = useQueryLesson(page, searchTerm, selectedLevel);
+    const { mutateAsync: mutateDeleteLesson } = useDeleteLesson();
     const lessons = data?.lesson || [];
     const getLevelBadge = (level: string) => {
         const badges = {
@@ -24,7 +27,14 @@ export default function AdminLesson() {
     };
     const [selectLesson, setSelectLesson] = useState<LessonDTO>();
     const [showModalEdit, setShowModalEdit] = useState(false);
-
+    const handleDelete = async (id: number) => {
+        try {
+            window.confirm("Are you sure to delete this lesson?") && await mutateDeleteLesson(id);
+        } catch (err: any) {
+            toast.error("Error delete lesson");
+            console.error(err.message);
+        }
+    }
 
 
     return (
@@ -115,8 +125,8 @@ export default function AdminLesson() {
                                             }} className="p-2  text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-150">
                                                 <FontAwesomeIcon icon={faEdit} className="text-sm" />
                                             </button>
-                                            <button className="p-2  text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150">
-                                                <FontAwesomeIcon icon={faTrash} className="text-sm" />
+                                            <button onClick={() => handleDelete(lesson.id)} className="p-2  text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150">
+                                                <FontAwesomeIcon icon={faTrash}  className="text-sm" />
                                             </button>
                                         </div>
                                     </td>

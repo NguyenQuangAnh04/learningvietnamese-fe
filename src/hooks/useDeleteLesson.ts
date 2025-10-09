@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { deleteLesson } from "../service/lessonService";
 
-export const useDeleteLesson = () => {
+export function useDeleteLesson() {
     const queryClient = useQueryClient();
-    useMutation({
+    return useMutation({
         mutationFn: (id: number) => {
             return deleteLesson(id);
         },

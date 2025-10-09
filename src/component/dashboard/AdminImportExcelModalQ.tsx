@@ -7,7 +7,7 @@ import { Question } from '../../types/Question';
 interface AdminImportExcelModalQProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'MC' | 'LS' | 'AR';
+  mode: 'MC' | 'LS' | 'AS';
 }
 
 export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminImportExcelModalQProps) {
@@ -24,7 +24,7 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
     switch (mode) {
       case 'MC': return 'Multiple Choice';
       case 'LS': return 'Listening';
-      case 'AR': return 'Arrange';
+      case 'AS': return 'Arrange';
       default: return 'Question';
     }
   };
@@ -33,7 +33,7 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
     switch (mode) {
       case 'MC': return 'blue';
       case 'LS': return 'green';
-      case 'AR': return 'purple';
+      case 'AS': return 'purple';
       default: return 'gray';
     }
   };
@@ -73,6 +73,7 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
       console.log('Submitting questions:', formData);
       console.log('Selected Lesson ID:', selectedLessonId);
       console.log('Game Type:', typeGame);
+      window.location.reload();
       await addQuestion(typeGame, selectedLessonId, formData);
       toast.success(`Successfully added ${formData.length} questions.`);
       setFormData([]);
@@ -215,7 +216,7 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
         );
 
 
-      case 'AR':
+      case 'AS':
         return (
           <div className={`p-4 bg-${color}-50 border border-${color}-200 rounded-lg`}>
             <h4 className={`font-medium text-${color}-800 mb-3 flex items-center`}>
@@ -292,7 +293,7 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
                     onChange={(e) => setSelectedLessonId(e.target.value ? Number(e.target.value) : null)}
                     className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0  text-sm'
                   >
-                    <option  value="">Choose a lesson...</option>
+                    <option value="">Choose a lesson...</option>
                     {data?.lesson && data.lesson.filter(it => it.gameCount < 3).map((lesson) => (
                       <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
                     ))}

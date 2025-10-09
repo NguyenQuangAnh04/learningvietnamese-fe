@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 import ModalVocabulary from '../../component/dashboard/ModalVocabulary';
+import { useDeleteVocabulary } from '../../hooks/useDeleteVocabulary';
 import { useQueryLesson } from '../../hooks/useLesson';
 import { useUpdateVocabulary } from '../../hooks/useUpdateVocabulary';
 import { useVocabularyQuery } from '../../hooks/useVocabulay';
@@ -52,7 +53,16 @@ export default function AdminVocabulary() {
         label: l.title
     }))
     const vocabularies = data?.vocabularies || [];
-
+    const { mutateAsync: mutateDeleteVocabulary } = useDeleteVocabulary();
+    const handleDelete = async (id: number) => {
+        try {
+            window.confirm("Are you sure to delete this vocabulary?") && await mutateDeleteVocabulary(id);
+            toast.success("Delete vocabulary successfully")
+        } catch (err: any) {
+            toast.error("Error delete vocabulary");
+            console.error(err.message);
+        }
+    }
     return (
         <div className=" p-2">
             {/* Header */}
@@ -104,6 +114,8 @@ export default function AdminVocabulary() {
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
                                 <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm tracking-tight">ID</th>
+                                <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm tracking-tight">Lesson</th>
+
                                 <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm tracking-tight">Vietnamese Word</th>
                                 <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm tracking-tight">English Meaning</th>
                                 <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm tracking-tight">Pronunciation</th>
@@ -115,6 +127,11 @@ export default function AdminVocabulary() {
                                 <tr key={vocab.id} className="hover:bg-gray-50 transition-colors duration-150">
                                     <td className="py-4 px-6">
                                         <span className="text-sm font-medium text-gray-500">#{vocab.id}</span>
+                                    </td>
+                                    <td className="py-4 px-6">
+
+                                        <span className="text-gray-700">{vocab.lesson}</span>
+
                                     </td>
                                     <td className="py-4 px-6">
                                         <div className="flex items-center gap-3">
@@ -174,7 +191,7 @@ export default function AdminVocabulary() {
                                                 </button>
                                             )}
 
-                                            <button
+                                            <button onClick={() => handleDelete(vocab.id)}
                                                 className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150"
                                                 title="Delete vocabulary"
                                             >

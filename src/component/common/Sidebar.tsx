@@ -21,7 +21,7 @@ export default function Sidebar() {
     { name: "Lessons", link: "/admin/lessons", icon: faBook },
     { name: "Games", link: "/admin/games", icon: faGamepad },
     { name: "Vocabulary", link: "/admin/vocabularies", icon: faVolumeUp },
-    { name: "Reports", link: "/admin/reports", icon: faFileAlt },
+    // { name: "Reports", link: "/admin/reports", icon: faFileAlt },
   ];
 
   const isActive = (path: string) => location.pathname === path;

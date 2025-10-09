@@ -22,3 +22,7 @@ export const importExcel = (file: File) => {
         },
     });
 }
+
+export const deleteVocabulary = (id: number) => {
+    return api.delete(`/vocabulary/delete/${id}`);
+}

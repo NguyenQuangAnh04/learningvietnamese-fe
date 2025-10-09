@@ -1,8 +1,10 @@
-import { faEdit, faFileExcel, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import AdminImportExcelModalQ from '../../component/dashboard/AdminImportExcelModalQ';
+import { useDeleteGame } from '../../hooks/useDeleteGame';
 import { useQueryLesson } from '../../hooks/useLesson';
 import { useQueryGame } from '../../hooks/useQueryGame';
 import { useQueryGameDetail } from '../../hooks/useQueryGameDetails';
@@ -25,17 +27,27 @@ export default function AdminLessonGames() {
     };
     const [selectedLessonId, setSelectedLessonId] = useState<number>();
     const navigate = useNavigate();
-    console.log(selectedLessonId)
-    const { data } = useQueryGame(selectedLessonId);
+    console.log(selectedLessonId);
+    const { data } = useQueryGame(selectedLessonId === 0 ? undefined : selectedLessonId);
     const games = data?.games || [];
     const { data: lessonData } = useQueryLesson();
-    const [selectedGameType, setSelectedGameType] = useState<'MC' | 'LS' | 'AR'>('MC');
+    const [selectedGameType, setSelectedGameType] = useState<'MC' | 'LS' | 'AS'>('MC');
+    const { mutateAsync: mutateDeleteGame } = useDeleteGame();
+    const handleDelete = async (id: number) => {
+        try {
+            await mutateDeleteGame(id);
+            toast.success("Delete game successfully");
+        } catch (err: any) {
+            toast.error("Error delete game");
+            console.error(err.message);
+        }
+    }
     return (
         <div className="p-2">
             <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Lesson Games Management</h1>
                 <div className="flex items-center gap-3">
-                  
+
                     <div className="flex gap-4">
                         <button
                             onClick={() => {
@@ -63,7 +75,7 @@ export default function AdminLessonGames() {
 
                         <button
                             onClick={() => {
-                                setSelectedGameType('AR');
+                                setSelectedGameType('AS');
                                 setShowModalExport(true);
                             }}
                             className="flex items-center gap-2 px-4 py-2 rounded-lg shadow-md 
@@ -120,13 +132,7 @@ export default function AdminLessonGames() {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            if (it.type === "MC" || it.type === "LS") {
-                                                setIsModalOpen(true);
-                                                // handleEdit(it.lessonId, it.gameTypeId).then(res => setMcData(res));
-                                            } else {
-                                                setIsModaArrangeModalOpen(true);
-                                                // handleEdit(it.lessonId, it.gameTypeId).then(res => setArrangeData(res));
-                                            }
+                                            handleDelete(it.id)
                                         }}
                                         className="text-red-400"
                                     >

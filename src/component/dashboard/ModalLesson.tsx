@@ -39,7 +39,8 @@ export default function ModalLesson({ isOpen, onClose, lesson }: ModalLessonProp
         vocabularies: [],
         created: '',
         updated: '',
-        gameCount: 0
+        gameCount: 0,
+        progress: 0
 
     });
 

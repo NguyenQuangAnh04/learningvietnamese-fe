@@ -10,5 +10,9 @@ export function submit(answerDTO: AnswerDTO) {
 }
 
 export function findGameByLessonId(lessonId: number | null, page?: number) {
-    return api.get(`/game`, { params: { page, lessonId } });    
+    return api.get(`/game`, { params: { page, lessonId } });
+}
+
+export function deleteGame(gameId: number) {
+    return api.delete(`/game/delete/${gameId}`);
 }
