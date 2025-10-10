@@ -1,9 +1,13 @@
-import { faEdit, faEye, faPlus, faSearch, faTrash, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus, faSearch, faTrash, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import ModalUser from '../../component/dashboard/ModalUser';
+import { useAddUser } from '../../hooks/useAddUser';
+import { useDeleteRole } from '../../hooks/useDeleteUser';
+import { useUpdateRole } from '../../hooks/useUpdateRole';
 import { useUserQuery } from '../../hooks/useUser';
 import { Role, UserDTO } from '../../types/User';
+
 
 export default function AdminUser() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -12,7 +16,6 @@ export default function AdminUser() {
     const { data } = useUserQuery(searchTerm, selectedRole, page);
     const users = data?.users || [];
     const totalPage = data?.totalPage || 1;
-
     const getRoleBadge = (role: string) => {
         const badges = {
             ADMIN: 'bg-purple-100 text-purple-800 border-purple-200',
@@ -22,7 +25,18 @@ export default function AdminUser() {
         };
         return badges[role as keyof typeof badges] || 'bg-gray-100 text-gray-800 border-gray-200';
     };
+    const { mutate: updateRole } = useUpdateRole();
+    const { mutate: deleteUser } = useDeleteRole();
+    const handleChangeRole = async (userId: number, role: Role) => {
+        await updateRole({ userId, role });
+    }
 
+    const deleteUserById = async (userId: number) => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            await deleteUser({ userId });
+        }
+
+    }
     const getGenderBadge = (gender: string) => {
         const badges = {
             MALE: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -62,7 +76,7 @@ export default function AdminUser() {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="bg-white rounded-xl my-4 shadow-sm">
                 <div className="flex flex-col md:flex-row gap-4">
                     {/* Search */}
                     <div className="flex-1 relative">
@@ -108,7 +122,7 @@ export default function AdminUser() {
             </div>
 
             {/* Users Table */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mt-5">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
@@ -122,7 +136,7 @@ export default function AdminUser() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {users.map((user: any) => (
+                            {users.map((user) => (
                                 <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150">
                                     <td className="py-4 px-6">
                                         <div className="flex items-center gap-3">
@@ -147,9 +161,18 @@ export default function AdminUser() {
                                     <td className="py-4 px-6">
                                         <div className="flex items-center gap-2">
 
-                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadge(user.roleName)}`}>
-                                                {user.roleName}
-                                            </span>
+                                            <select
+                                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadge(user.roleName)}`}
+                                                value={user.roleName} // set selected
+                                                onChange={(e) => handleChangeRole(user.id, e.target.value as Role)}
+                                            >
+                                                {['ADMIN', 'TEACHER', 'USER'].map(role => (
+                                                    <option key={role} value={role}>
+                                                        {role}
+                                                    </option>
+                                                ))}
+                                            </select>
+
                                         </div>
                                     </td>
                                     <td className="py-4 px-6">
@@ -180,13 +203,13 @@ export default function AdminUser() {
                                     </td>
                                     <td className="py-4 px-6">
                                         <div className="flex items-center gap-2">
-                                            <button className="p-2  text-blue-600  rounded-lg transition-colors duration-150" title="View details">
+                                            {/* <button className="p-2  text-blue-600  rounded-lg transition-colors duration-150" title="View details">
                                                 <FontAwesomeIcon icon={faEye} className="text-sm" />
-                                            </button>
+                                            </button> */}
                                             <button className="p-2  text-green-600  rounded-lg transition-colors duration-150" title="Edit user">
                                                 <FontAwesomeIcon icon={faEdit} className="text-sm" />
                                             </button>
-                                            <button className="p-2  text-red-600 rounded-lg transition-colors duration-150" title="Delete user">
+                                            <button onClick={() => deleteUserById(user.id)} className="p-2  text-red-600 rounded-lg transition-colors duration-150" title="Delete user">
                                                 <FontAwesomeIcon icon={faTrash} className="text-sm" />
                                             </button>
                                         </div>

@@ -1,4 +1,4 @@
-import { faEdit, faEye, faPlus, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -35,8 +35,7 @@ export default function AdminLesson() {
             console.error(err.message);
         }
     }
-
-
+    
     return (
         <div className="p-5">
             <div className="flex items-center justify-between">
@@ -116,9 +115,9 @@ export default function AdminLesson() {
                                     </td>
                                     <td className="py-4 px-6">
                                         <div className="flex   gap-2">
-                                            <button className="p-2  text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150">
+                                            {/* <button className="p-2  text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150">
                                                 <FontAwesomeIcon icon={faEye} className="text-sm" />
-                                            </button>
+                                            </button> */}
                                             <button onClick={() => {
                                                 setSelectLesson(lesson);
                                                 setShowModalEdit(true);
@@ -126,7 +125,7 @@ export default function AdminLesson() {
                                                 <FontAwesomeIcon icon={faEdit} className="text-sm" />
                                             </button>
                                             <button onClick={() => handleDelete(lesson.id)} className="p-2  text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150">
-                                                <FontAwesomeIcon icon={faTrash}  className="text-sm" />
+                                                <FontAwesomeIcon icon={faTrash} className="text-sm" />
                                             </button>
                                         </div>
                                     </td>

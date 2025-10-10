@@ -2,7 +2,9 @@ import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import PrivateRoute from './component/PrivateRoute';
+import { ProtectedRoute } from './component/ProtectedRoute';
 import Admin from './pages/admin/Admin';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLesson from './pages/admin/AdminLesson';
 import AdminQuestion from './pages/admin/AdminQuestion';
 import AdminTopic from './pages/admin/AdminTopic';
@@ -22,7 +24,6 @@ import MultipleGame from './pages/MultipleGame';
 import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 import Topic from './pages/Topic';
-import AdminEditQuestion from './pages/admin/AdminEditQuestion';
 
 function App() {
   return (
@@ -90,13 +91,22 @@ function App() {
             <LessionDetails />
           </PrivateRoute>
         } />
-        <Route path="/admin" element={<Admin />}>
-          <Route index element={<AdminLesson />} />      {/* /admin */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="ADMIN">
+              <Admin />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />           {/* /admin */}
+          <Route path="dashboard" element={<AdminDashboard />} />  {/* /admin/lessons */}
+
           <Route path="lessons" element={<AdminLesson />} />  {/* /admin/lessons */}
-          <Route path='users' element={<AdminUser />} />
-          <Route path='vocabularies' element={<AdminVocabulary />} />
-          <Route path='topics' element={<AdminTopic />} />
-          <Route path='games' element={<AdminQuestion />} />
+          <Route path="users" element={<AdminUser />} />
+          <Route path="vocabularies" element={<AdminVocabulary />} />
+          <Route path="topics" element={<AdminTopic />} />
+          <Route path="games" element={<AdminQuestion />} />
         </Route>
 
 

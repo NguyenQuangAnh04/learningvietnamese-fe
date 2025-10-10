@@ -6,13 +6,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../component/common/Header';
 import { getLessonByTitle } from '../service/lessonService';
 import { LessonDTO } from '../types/Lession';
+import api from '../service/axiosClient';
 
 export default function LessonDetails() {
   const [actions, setActions] = useState('Content');
   const [lessonDetails, setLessonDetails] = useState<LessonDTO>();
   const { title } = useParams();
   useEffect(() => {
-    if (!title) return; // kiểm tra điều kiện bên trong
+    if (!title) return;
     const fetchData = async () => {
       const res = await getLessonByTitle(title);
       setLessonDetails(res.data);
@@ -20,7 +21,25 @@ export default function LessonDetails() {
     fetchData();
   }, [title]);
   const navigate = useNavigate();
-  console.log(lessonDetails);
+  const speakText = async (text: string) => {
+    try {
+      const response = await api.get(`/tts?text=${encodeURIComponent(text)}`, {
+        responseType: 'blob', // quan trọng
+      });
+
+      const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+
+      const audio = new Audio(audioUrl);
+      audio.play();
+
+      // Giải phóng URL khi không dùng nữa
+      audio.onended = () => URL.revokeObjectURL(audioUrl);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (!title) return <div>Loading...</div>;
   return (
     <>
@@ -66,32 +85,9 @@ export default function LessonDetails() {
                                   <p>- <strong className='text-white'>"{item.word}"</strong> - {item.meaning}</p>
                                 </div>
                               ))}
-                              {/* <div className='bg-[#1b262c] p-4 rounded-lg'>
-                                <p>- <strong className='text-white'>"Chào buổi sáng"</strong> - Used from dawn until noon</p>
-                              </div>
-                              <div className='bg-[#1b262c] p-4 rounded-lg'>
-                                <p>- <strong className='text-white'>"Chào buổi chiều"</strong> - Used from noon until evening</p>
-                              </div>
-                              <div className='bg-[#1b262c] p-4 rounded-lg'>
-                                <p>- <strong className='text-white'>"Chào buổi tối"</strong> - Used from evening until bedtime</p>
-                              </div> */}
+
                             </div>
                           </div>
-                          {/* 
-                          <div>
-                            <h3 className='text-lg font-semibold text-gray-300 mb-3'>## Polite Expressions</h3>
-                            <div className='space-y-3 text-gray-300'>
-                              <div className='bg-[#1b262c] p-4 rounded-lg'>
-                                <p>- <strong className='text-white'>"Cám ơn"</strong> - Used to express gratitude</p>
-                              </div>
-                              <div className='bg-[#1b262c] p-4 rounded-lg'>
-                                <p>- <strong className='text-white'>"Xin lỗi"</strong> - Used to get attention or apologize</p>
-                              </div>
-                              <div className='bg-[#1b262c] p-4 rounded-lg'>
-                                <p>- <strong className='text-white'>"Không có gì"</strong> - Response to "Cám ơn"</p>
-                              </div>
-                            </div>
-                          </div> */}
                         </div>
                       </div>
                     )}
@@ -104,7 +100,7 @@ export default function LessonDetails() {
                             <div key={index} className='bg-[#1b262c] p-2 rounded-lg border border-gray-600'>
                               <div className='flex justify-between items-start mb-2'>
                                 <h4 className='text-lg font-semibold text-white'>{word.word}</h4>
-                                <button className='text-blue-400 hover:text-blue-300'>
+                                <button onClick={() => speakText(word.word)} className='text-blue-400 hover:text-blue-300'>
                                   🔊
                                 </button>
                               </div>
@@ -143,7 +139,7 @@ export default function LessonDetails() {
                   <div className='space-y-4'>
                     <div className='flex justify-between items-center'>
                       <span className='text-gray-400'>Vocabulary Words</span>
-                      <span className='font-semibold text-white'>8</span>
+                      <span className='font-semibold text-white'>{lessonDetails.vocabularies.length}</span>
                     </div>
                     <div className='flex justify-between items-center'>
                       <span className='text-gray-400'>Estimated Time</span>
@@ -151,32 +147,14 @@ export default function LessonDetails() {
                     </div>
                     <div className='flex justify-between items-center'>
                       <span className='text-gray-400'>Difficulty</span>
-                      <span className='font-semibold text-white'>Beginner</span>
+                      <span className='font-semibold text-white'>{lessonDetails.level}</span>
                     </div>
-                    {/* <div className='flex justify-between items-center'>
-                      <span className='text-gray-400'>Progress</span>
-                      <div className='flex items-center'>
-                        <div className='w-16 h-2 bg-gray-600 rounded-full mr-2'>
-                          <div className='w-full h-2 bg-green-500 rounded-full'></div>
-                        </div>
-                        <span className='font-semibold text-green-400'>100%</span>
-                      </div>
-                    </div> */}
+
                   </div>
                 </div>
 
-                {/* Achievement Badge */}
-                {/* <div className='bg-[#1b262c] rounded-lg border border-gray-600 p-6 mt-6 text-center'>
-                  <div className='w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3'>
-                    <svg className='w-8 h-8 text-white' fill='currentColor' viewBox='0 0 20 20'>
-                      <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                    </svg>
-                  </div>
-                  <h4 className='font-semibold text-green-400 mb-1'>Lesson Completed!</h4>
-                  <p className='text-gray-400 text-sm'>Great job on finishing this lesson</p>
-                </div> */}
+
               </div>
-              {/* Cột trái - Nội dung bài học */}
 
 
 

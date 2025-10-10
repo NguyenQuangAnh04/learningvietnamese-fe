@@ -4,13 +4,13 @@ import { addUser } from "../service/userService";
 import { UserDTO } from "../types/User";
 
 export function useAddUser() {
-    const useQuery = useQueryClient();
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (userDTO: UserDTO) => {
-            return await addUser(userDTO);
+            await addUser(userDTO);
         },
         onSuccess: () => {
-            useQuery.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['users'] });
             toast.success("Add user successfully");
         }
     })

@@ -320,6 +320,18 @@ export default function ArrangeSentence() {
                                 : 'bg-gradient-to-r from-red-600/20 to-red-800/20 text-red-300 border-red-500/30 shadow-lg'
                                 }`}>
                                 {result}
+
+                                {/* ✅ Hiển thị đáp án đúng nếu sai */}
+                                {!isCorrect && questions.length > 0 && (
+                                    <div className="mt-4 pt-4 border-t border-red-500/30">
+                                        <p className="text-sm text-red-200 mb-2">Correct answer:</p>
+                                        <div className="bg-red-900/30 rounded-lg p-3 border border-red-500/40">
+                                            <p className="text-white font-medium text-lg">
+                                                {questions[currentQuestionIndex]?.sentence?.join(' ')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

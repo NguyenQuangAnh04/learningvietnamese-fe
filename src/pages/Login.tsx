@@ -6,12 +6,14 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import LanguageSwitcher from "../component/common/LanguageSwitcher";
+import { useAuth } from "../context/useAuth";
 
 export default function Login() {
     const [value, setValue] = useState("");
     const { t } = useTranslation();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const {login} = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -20,7 +22,7 @@ export default function Login() {
             const res = await axios.post("http://localhost:8080/api/login", {
                 email, password
             }, { withCredentials: true });
-            localStorage.setItem("access_token", res.data.access_token);
+            login(res.data.access_token);
             navigate('/')
 
         } catch (err) {

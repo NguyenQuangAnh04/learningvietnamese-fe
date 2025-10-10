@@ -1,6 +1,7 @@
 import { faCalendar, faEnvelope, faMapMarker, faPhone, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
+import { useAddUser } from '../../hooks/useAddUser';
 import { UserDTO } from '../../types/User';
 
 interface ModalUserProps {
@@ -27,22 +28,16 @@ export default function ModalUser({ isOpen, onClose, user }: ModalUserProps) {
         newPassword: '',
         roleName: user?.roleName || 'USER'
     });
-
-    const handleAddOrUpdate = async () => {
+    const { mutateAsync: addUser } = useAddUser();
+    const handleAdd = async (userDTO: UserDTO) => {
         try {
-            if (user) {
-                // await updateUser(formData);
-                console.log('Update user:', formData);
-                onClose();
-            } else {
-                // await createUser(formData);
-                console.log('Create user:', formData);
-                onClose();
-            }
+            await addUser(userDTO); // dùng mutateAsync để chờ mutation hoàn tất
+            onClose();
         } catch (error) {
-            console.error('Error adding/updating user:', error);
+            console.error(error);
         }
     };
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -182,7 +177,7 @@ export default function ModalUser({ isOpen, onClose, user }: ModalUserProps) {
                                             <option value="TEACHER">Teacher</option>
                                         </select>
                                     </div>
-                                    <div>
+                                    {/* <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Language
                                         </label>
@@ -196,7 +191,7 @@ export default function ModalUser({ isOpen, onClose, user }: ModalUserProps) {
                                             <option value="english">English</option>
                                             <option value="japanese">Japanese</option>
                                         </select>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 <div>
@@ -217,7 +212,7 @@ export default function ModalUser({ isOpen, onClose, user }: ModalUserProps) {
                                 </div>
                             </div>
 
-                          
+
                             {/* Bio Section */}
                             <div className="space-y-4">
                                 <h3 className="text-lg font-semibold text-gray-900">Additional Information</h3>
@@ -262,7 +257,7 @@ export default function ModalUser({ isOpen, onClose, user }: ModalUserProps) {
                         Cancel
                     </button>
                     <button
-                        onClick={handleAddOrUpdate}
+                        onClick={() => handleAdd(formData)}
                         className="px-6 py-2.5 bg-[#007AFF] hover:bg-[#0056CC] text-white font-medium text-sm rounded-lg transition-colors duration-150"
                     >
                         {user ? 'Update User' : 'Create User'}

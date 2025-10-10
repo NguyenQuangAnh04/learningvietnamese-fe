@@ -31,6 +31,7 @@ export default function AdminLessonGames() {
     const { data } = useQueryGame(selectedLessonId === 0 ? undefined : selectedLessonId);
     const games = data?.games || [];
     const { data: lessonData } = useQueryLesson();
+
     const [selectedGameType, setSelectedGameType] = useState<'MC' | 'LS' | 'AS'>('MC');
     const { mutateAsync: mutateDeleteGame } = useDeleteGame();
     const handleDelete = async (id: number) => {
@@ -116,28 +117,30 @@ export default function AdminLessonGames() {
                                 <td className="px-4 py-3">{it.titleLesson}</td>
                                 <td className="px-4 py-3">{it.title}</td>
                                 <td className="px-4 py-3">
-                                    <button
-                                        onClick={() => {
-                                            if (it.type === "MC" || it.type === "LS") {
-                                                setIsModalOpen(true);
-                                                handleEdit(it.lessonId, it.gameTypeId).then(res => setMcData(res));
-                                            } else {
-                                                setIsModaArrangeModalOpen(true);
-                                                handleEdit(it.lessonId, it.gameTypeId).then(res => setArrangeData(res));
-                                            }
-                                        }}
-                                        className="text-yellow-300"
-                                    >
-                                        <FontAwesomeIcon icon={faEdit} />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            handleDelete(it.id)
-                                        }}
-                                        className="text-red-400"
-                                    >
-                                        <FontAwesomeIcon icon={faTrash} />
-                                    </button>
+                                    <section className='flex gap-2'>
+                                        <button
+                                            onClick={() => {
+                                                if (it.type === "MC" || it.type === "LS") {
+                                                    setIsModalOpen(true);
+                                                    handleEdit(it.lessonId, it.gameTypeId).then(res => setMcData(res));
+                                                } else {
+                                                    setIsModaArrangeModalOpen(true);
+                                                    handleEdit(it.lessonId, it.gameTypeId).then(res => setArrangeData(res));
+                                                }
+                                            }}
+                                            className="text-green-600"
+                                        >
+                                            <FontAwesomeIcon icon={faEdit} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                handleDelete(it.id)
+                                            }}
+                                            className="text-red-600"
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </button>
+                                    </section>
                                 </td>
 
                             </tr>

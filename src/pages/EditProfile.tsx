@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { toast } from 'react-toastify';
+import { uploadImage } from '../service/uploadService';
 import { editProdile, getInforUser } from '../service/userService';
 import { UserDTO } from '../types/User';
 
@@ -61,12 +62,16 @@ export default function EditProfile() {
     const handleInputChange = (field: keyof UserDTO, value: string) => {
         setForm(prev => ({ ...prev, [field]: value }))
     };
-
+    const [file, setFile] = useState<File>();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true)
         try {
             await editProdile(form);
+            if (file) {
+                await uploadImage(file)
+
+            }
             await new Promise(r => setTimeout(r, 2000));
             setLoading(false);
             await toast.success("Update profile successfully")
@@ -86,7 +91,6 @@ export default function EditProfile() {
     const last = parts && parts[parts.length - 1]?.charAt(0).toUpperCase() || "";
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setNewShowPassword] = useState(false);
-
     return (
         <div className='bg-[#141f25] min-h-screen text-white py-10'>
             <div className="max-w-[1200px] mx-auto  px-4">
@@ -103,7 +107,7 @@ export default function EditProfile() {
                                     alt="preview"
                                     className="w-28 h-28 rounded-full border-2 border-cyan-500 shadow-md object-cover"
                                 />
-                            ) : form?.avatar !== "Unknow" ? (
+                            ) : form.avatar && form.avatar !== "Unknow"? (
                                 <img
                                     src={form?.avatar}
                                     alt="avatar"
@@ -124,6 +128,8 @@ export default function EditProfile() {
                         <input type="file" onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
                                 const file = e.target.files[0];
+                                setFile(file);
+                                handleInputChange('avatar', URL.createObjectURL(file));
                                 setPreview(URL.createObjectURL(file))
 
                             }
@@ -162,6 +168,14 @@ export default function EditProfile() {
                                 <FontAwesomeIcon icon={faEye} />
                             ) : (<FontAwesomeIcon icon={faEyeSlash} />))}</button>
                         </div>
+                    </div>
+                    <div className='space-y-2'>
+                        <label htmlFor="" className='font-semibold'>Location</label>
+                        <input type="text" onChange={(e) => handleInputChange('location', e.target.value)} value={form?.location} className='w-full bg-[#202f36] text-white placeholder:text-[#c8e2e3]/70 rounded-xl border border-white/10 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 px-4 py-2 transition' />
+                    </div>
+                    <div className='space-y-2'>
+                        <label htmlFor="" className='font-semibold'>Bio</label>
+                        <input type="text" onChange={(e) => handleInputChange('bio', e.target.value)} value={form?.bio} className='w-full bg-[#202f36] text-white placeholder:text-[#c8e2e3]/70 rounded-xl border border-white/10 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 px-4 py-2 transition' />
                     </div>
                     <div className="flex justify-end">
                         <button type='submit' disabled={!isChanged} className={`bg-cyan-600 px-4 py-2 flex items-center rounded-xl hover:bg-cyan-800 ${isChanged ? "" : "bg-gray-400 cursor-not-allowed"}`}>

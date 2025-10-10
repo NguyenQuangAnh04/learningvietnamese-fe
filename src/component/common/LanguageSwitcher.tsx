@@ -21,9 +21,9 @@ export default function LanguageSwitcher() {
         <div className="relative group">
             {/* Main Button */}
             <button className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-all duration-300 border border-gray-600">
-                <FontAwesomeIcon icon={faGlobe} className="text-cyan-400" />
+                {/* <FontAwesomeIcon icon={faGlobe} className="text-cyan-400" /> */}
                 <span className="text-white text-sm font-medium">
-                    {currentLanguage.flag} {currentLanguage.name}
+                     {currentLanguage.name}
                 </span>
                 <svg className="w-4 h-4 text-gray-400 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

@@ -15,7 +15,6 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { data } = useQueryLesson();
-  console.log(data);
   const [error, setError] = useState<string>('');
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
   if (!isOpen) return null;
@@ -142,9 +141,9 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
 
           {mode === 'LS' && question.audio_url && (
             <div className="pt-2 border-t border-gray-200">
-              <p className="text-xs text-gray-500 flex items-center">
+              {/* <p className="text-xs text-gray-500 flex items-center">
                 🎵 Audio: {question.audio_url}
-              </p>
+              </p> */}
             </div>
           )}
         </div>
@@ -294,7 +293,7 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
                     className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0  text-sm'
                   >
                     <option value="">Choose a lesson...</option>
-                    {data?.lesson && data.lesson.filter(it => it.gameCount < 3).map((lesson) => (
+                    {data?.lesson && data.lesson.filter(lesson => lesson.gameCount < 3 && !lesson.typeGames?.includes(mode)).map((lesson) => (
                       <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
                     ))}
                   </select>

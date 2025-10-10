@@ -89,7 +89,7 @@ export default function LessonCard() {
               </div>
 
               <p className="text-[13px] text-gray-300 mt-2 leading-snug line-clamp-3">
-                {lesson.title}
+                {lesson.describe}
               </p>
 
               <div className="mt-3 flex items-center gap-3 flex-wrap">

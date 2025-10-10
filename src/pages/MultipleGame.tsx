@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import ReactConfetti from 'react-confetti';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWindowSize } from 'react-use';
+import api from '../service/axiosClient';
 import { startGame, submit } from '../service/gameService';
 import { AnswerDTO, Question } from '../types/Question';
 
@@ -27,17 +28,22 @@ const MultipleGame: React.FC = () => {
     const [isCompleted, setIsCompleted] = useState(false);
     const navigate = useNavigate();
 
-    const speakText = (text: string) => {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'vi-VN';
-            utterance.rate = 0.8;
-            utterance.pitch = 1;
-            utterance.volume = 1;
-            window.speechSynthesis.speak(utterance);
-        } else {
-            alert('Your browser does not support speech synthesis.');
+    const speakText = async (text: string) => {
+        try {
+            const response = await api.get(`/tts?text=${encodeURIComponent(text)}`, {
+                responseType: 'blob', // quan trọng
+            });
+
+            const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            const audio = new Audio(audioUrl);
+            audio.play();
+
+            // Giải phóng URL khi không dùng nữa
+            audio.onended = () => URL.revokeObjectURL(audioUrl);
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -66,6 +72,7 @@ const MultipleGame: React.FC = () => {
                     setBonusScore(i => i + 20);
                 }
             }
+            console.log('Submit response:', res.data);
         } catch (error) {
             console.error('Submit error:', error);
         } finally {
@@ -170,7 +177,7 @@ const MultipleGame: React.FC = () => {
                                         </div>
                                         <div className="flex justify-between mt-2 text-green-400 font-semibold">
                                             <span>Total</span>
-                                            <span>{totalScore}</span>
+                                            <span>{totalScore + bonusScore}</span>
                                         </div>
                                     </div>
                                 )}
@@ -227,16 +234,21 @@ const MultipleGame: React.FC = () => {
 
                         {/* Question */}
                         <div className="bg-[#1e2a30] border border-gray-700 rounded-xl p-6 text-center">
-                            <h2 className="text-xl font-semibold text-white leading-relaxed">
-                                {currentQuestion.questionText}
-                            </h2>
-                            <button
-                                onClick={() => speakText(currentQuestion.questionText)}
-                                className="mt-3 inline-flex items-center gap-2 bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition"
-                            >
-                                <FontAwesomeIcon icon={faVolumeUp} />
-                                <span>Listen</span>
-                            </button>
+                            {!currentQuestion.audio_url ? (
+                                <h2 className="text-xl font-semibold text-white leading-relaxed">
+                                    {currentQuestion.questionText}
+                                </h2>
+                            ) : (
+                                <button
+                                    onClick={() => speakText(currentQuestion.questionText)}
+                                    className="mt-3 inline-flex items-center gap-2 bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition"
+                                >
+                                    <FontAwesomeIcon icon={faVolumeUp} />
+                                    <span>Listen</span>
+                                </button>
+                            )}
+
+
 
                             {currentQuestion.image_url && (
                                 <img

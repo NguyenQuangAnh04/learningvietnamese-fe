@@ -13,9 +13,17 @@ export const editProdile = (userDTO: UserDTO) => {
 }
 
 export const addUser = (userDTO: UserDTO) => {
-    return api.post("/user/add_user", userDTO)
+    return api.post("/add", userDTO)
 }
 export async function getUsers(keyword: string, role: Role, page: number): Promise<UserResponse> {
     const res = await api.get<UserResponse>("/user", { params: { keyword, role, page } });
     return res.data;
+}
+
+export const changeRole = (userId: number, role: Role) => {
+    return api.put(`/update-role/${userId}/${role}`);
+}
+
+export const deleteUser = (userId: number) => {
+    return api.delete(`/delete/${userId}`);
 }

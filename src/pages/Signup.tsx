@@ -4,16 +4,18 @@ import {
   faEnvelope,
   faEye,
   faEyeSlash,
+  faLanguage,
   faLock,
+  faMapMarkerAlt,
   faPhone,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next'; // ✅ Add translation
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next'; // ✅ Add translation
 import LanguageSwitcher from '../component/common/LanguageSwitcher'; // ✅ Add language switcher
 import { UserDTO } from '../types/User';
 
@@ -102,7 +104,7 @@ export default function Signup() {
                     value={formData.fullName}
                     onChange={(e) => handleInputChange("fullName", e.target.value)}
                     type="text"
-                    placeholder={t('Your name')} 
+                    placeholder={t('Your name')}
                     className={inputBase}
                     required
                   />
@@ -161,7 +163,7 @@ export default function Signup() {
                     value={formData.phoneNumber}
                     onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                     type="text"
-                    placeholder={t('Your phone number')} 
+                    placeholder={t('Your phone number')}
                     className={inputBase}
                   />
                 </div>
@@ -181,7 +183,44 @@ export default function Signup() {
                   />
                 </div>
               </div>
+              <div>
+                <label className={labelBase}>{t('Location')}</label> {/* ✅ Add translation */}
+                <div className={inputWrap}>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c8e2e3]">
+                    <FontAwesomeIcon icon={faMapMarkerAlt} />
+                  </span>
+                  <input
+                    value={formData.location}
+                    onChange={(e) => handleInputChange("location", e.target.value)}
+                    type="text"
+                    placeholder={t('Your addressr')}
+                    className={inputBase}
+                  />
+                </div>
+              </div>
 
+              <div>
+                <label className={labelBase}>{t('Language')}</label>
+                <div className={inputWrap}>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c8e2e3]">
+                    <FontAwesomeIcon icon={faLanguage} />
+                  </span>
+                  <select
+                    value={formData.language}
+                    onChange={(e) => handleInputChange("language", e.target.value)}
+                    className={`${inputBase} appearance-none pr-10 cursor-pointer`}
+                  >
+                    <option value="">{t('Select language')}</option>
+                    <option value="EN">English</option>
+                    <option value="JP">Japanese</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#c8e2e3]">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
               <div>
                 <label className={labelBase}>{t('Sex')}</label> {/* ✅ Add translation (using Sex instead of Gender) */}
                 <div className={inputWrap}>

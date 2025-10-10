@@ -2,7 +2,6 @@ import {
   faBook,
   faChartLine,
   faCog,
-  faFileAlt,
   faGamepad,
   faHome,
   faSignOutAlt,
@@ -11,10 +10,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/useAuth';
 
 export default function Sidebar() {
   const location = useLocation();
-
+  const { user } = useAuth();
   const menuItems = [
     { name: "Dashboard", link: "/admin/dashboard", icon: faChartLine },
     { name: "Users", link: "/admin/users", icon: faUsers },
@@ -23,6 +23,8 @@ export default function Sidebar() {
     { name: "Vocabulary", link: "/admin/vocabularies", icon: faVolumeUp },
     // { name: "Reports", link: "/admin/reports", icon: faFileAlt },
   ];
+  if(user == null) return null;
+  const fullName = decodeURIComponent(escape(user.fullName));
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -96,12 +98,12 @@ export default function Sidebar() {
 
         <div className='mt-4 p-3 bg-gray-50 rounded-xl  shadow-sm'>
           <div className='flex items-center gap-3'>
-            <div className='w-9 h-9 bg-gradient-to-br from-[#007AFF] to-[#0056CC] rounded-full flex items-center justify-center shadow-sm'>
+            {/* <div className='w-9 h-9 bg-gradient-to-br from-[#007AFF] to-[#0056CC] rounded-full flex items-center justify-center shadow-sm'>
               <span className='text-white text-sm font-semibold'>A</span>
-            </div>
+            </div> */}
             <div className='flex-1'>
-              <p className='text-gray-900 text-sm font-semibold tracking-tight'>Admin User</p>
-              <p className='text-gray-500 text-xs font-normal'>Administrator</p>
+              <p className='text-gray-900 text-sm font-semibold tracking-tight'>{user?.role}</p>
+              <p className='text-gray-500 text-xs font-normal'>{fullName}</p>
             </div>
           </div>
         </div>

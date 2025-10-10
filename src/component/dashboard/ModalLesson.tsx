@@ -40,7 +40,8 @@ export default function ModalLesson({ isOpen, onClose, lesson }: ModalLessonProp
         created: '',
         updated: '',
         gameCount: 0,
-        progress: 0
+        progress: 0,
+        typeGames: []
 
     });
 

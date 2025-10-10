@@ -28,3 +28,7 @@ export async function getLessonsByUser(page: number,title: string, level: string
     const res = await api.get<LessonsResponse>('/lesson/findByUser', { params: {page, title, level,size } });
     return res.data;
 }
+
+export function getLessonTop10Completed() {
+    return api.get(`/lesson/top-lesson`);
+}

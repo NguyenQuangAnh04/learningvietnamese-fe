@@ -9,7 +9,10 @@ export interface LessonDTO {
     level: string;
     created: string;
     gameCount: number;
+    typeGames: string[];
     progress: number;
+    totalUser?: number;
+    countCompleted?: number;
     updated: string;
 }
 

@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next"; // ✅ Thêm import này
 import { logout } from "../../service/userService";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useAuth } from "../../context/useAuth";
 
 export default function Header() {
     const { t } = useTranslation(); // ✅ Thêm hook này
-
+    const {logout} = useAuth();
     const handleLogout = async () => {
         await logout();
-        localStorage.removeItem("access_token");
+        logout();
         window.location.href = "/login";
     }
 
@@ -37,7 +38,6 @@ export default function Header() {
                     <a href="/" className="hover:text-blue-200 transition">
                         {t('Home')} {/* ✅ Dùng translation */}
                     </a>
-                    <LanguageSwitcher />
                     <a href="/profile" className="hover:text-blue-200 transition">
                         {t('Profile')} {/* ✅ Dùng translation */}
                     </a>
@@ -45,6 +45,8 @@ export default function Header() {
                         className="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition">
                         {t('LOG OUT')} {/* ✅ Dùng translation */}
                     </button>
+                    <LanguageSwitcher />
+
                 </div>
 
                 <button className="md:hidden block ">

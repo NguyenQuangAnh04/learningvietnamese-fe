@@ -3,6 +3,7 @@ import 'antd/dist/reset.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { AuthProvider } from './context/AuthContext'; // import AuthProvider
 import './index.css';
 import './locales/i18n';
 import reportWebVitals from './reportWebVitals';
@@ -12,10 +13,13 @@ const root = ReactDOM.createRoot(
 );
 
 const queryClient = new QueryClient();
+
 root.render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
 );
