@@ -1,32 +1,19 @@
 import {
-    faArrowUp,
     faBook,
-    faTrophy,
     faUsers
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQueryLesson } from '../../hooks/useLesson';
 import { getRecentActivities } from '../../service/gameService';
 import { getLessonTop10Completed } from '../../service/lessonService';
 import { LessonDTO } from '../../types/Lession';
 import { RecentActivityDTO } from '../../types/RecentActivity';
-import { useQueryLesson } from '../../hooks/useLesson';
 
 export default function AdminDashboard() {
     const { t } = useTranslation();
 
-    // Mock data - replace with real API calls
-    const stats = {
-        totalUsers: 1234,
-        totalLessons: 48,
-        totalGames: 156,
-        activeUsers: 892,
-        newUsersToday: 23,
-        completedLessons: 2847,
-        avgScore: 85.6,
-        totalRevenue: 12450
-    };
     const [activies, setActivities] = useState<RecentActivityDTO[]>([]);
     useEffect(() => {
         const fetchData = async () => {
@@ -55,10 +42,11 @@ export default function AdminDashboard() {
     const start = (totalCompleted?: number) => {
         const totalUsers = formLesson?.[0]?.totalUser ?? 1;
         const completed = totalCompleted ?? 0;
-        return (completed / (totalUsers || 1)) * 5;
+        const result = (completed / (totalUsers || 1)) * 5
+        return result.toFixed(1);
     }
-
-    const {data} = useQueryLesson();
+    
+    const { data } = useQueryLesson();
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             {/* Header */}

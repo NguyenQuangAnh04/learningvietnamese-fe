@@ -49,12 +49,13 @@ export default function Signup() {
     e.preventDefault();
 
     try {
+      
       const res = await axios.post("http://localhost:8080/api/register", formData);
       console.log("Signup success:", res.data);
       navigate("/login");
     } catch (error: any) {
-      console.error("Signup failed:", error.response.message);
-      toast.error("Signup failed:", error.data?.response?.message);
+      console.error("Signup failed:", error.response?.data?.message);
+      toast.error( error.response?.data?.message);
     }
   };
 

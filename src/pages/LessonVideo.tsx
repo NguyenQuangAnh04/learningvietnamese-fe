@@ -30,7 +30,7 @@ export default function LessonVideo() {
   }, [slug]);
   const navigate = useNavigate();
   const progressPercent = (currentTime / duration) * 100;
-  const youtubeUrl = "https://www.youtube.com/embed/Ef5MyWEkM4c?si=2Ogp0ROdY_mpbI9i&amp;start=3"; // Thay bằng video ID thực
+  const youtubeUrl = `https://www.youtube.com/embed/y5Gk0MHMp0I?autoplay=0&controls=1&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&origin=${window.location.origin}`;
 
   return (
     <>

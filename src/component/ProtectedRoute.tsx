@@ -4,7 +4,7 @@ import { useAuth } from "../context/useAuth";
 
 type ProtectedRouteProps = {
     children: ReactElement;
-    requiredRole: string;
+    requiredRole: string[];
 };
 
 export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
@@ -16,7 +16,7 @@ export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) 
         return <Navigate to="/login" replace />;
     }
 
-    if (user.role !== requiredRole) {
+    if (!requiredRole.includes(user.role)) {
         return <Navigate to="/login" replace />;
     }
 

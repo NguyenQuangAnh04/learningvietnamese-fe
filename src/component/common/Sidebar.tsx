@@ -16,8 +16,8 @@ export default function Sidebar() {
   const location = useLocation();
   const { user } = useAuth();
   const menuItems = [
-    { name: "Dashboard", link: "/admin/dashboard", icon: faChartLine },
-    { name: "Users", link: "/admin/users", icon: faUsers },
+    { name: "Dashboard", link: "/admin/dashboard", icon: faChartLine, role: "ADMIN" },
+    { name: "Users", link: "/admin/users", icon: faUsers, role: "ADMIN" },
     { name: "Lessons", link: "/admin/lessons", icon: faBook },
     { name: "Games", link: "/admin/games", icon: faGamepad },
     { name: "Vocabulary", link: "/admin/vocabularies", icon: faVolumeUp },
@@ -25,7 +25,7 @@ export default function Sidebar() {
   ];
   if(user == null) return null;
   const fullName = decodeURIComponent(escape(user.fullName));
-
+  console.log(user);
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -45,7 +45,7 @@ export default function Sidebar() {
 
         <nav className='p-4'>
           <ul className="space-y-1">
-            {menuItems.map((item) => (
+            {menuItems.filter(it => !it.role || it.role === user.role).map((item) => (
               <li key={item.link}>
                 <Link
                   to={item.link}

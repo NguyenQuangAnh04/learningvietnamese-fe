@@ -26,7 +26,7 @@ export default function Header() {
             document.body.style.overflow = 'auto';
         };
     }, [showMenu])
-
+    
     return (
         <header className='bg-[#14222a] text-white'>
             <nav className='container mx-auto max-w-[1200px] w-full px-2 py-4 shadow-2xl flex justify-between relative '>
