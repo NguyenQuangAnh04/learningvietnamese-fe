@@ -40,6 +40,7 @@ export default function Signup() {
     newPassword: "",
     roleName: ""
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleInputChange = (field: keyof UserDTO, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -49,15 +50,27 @@ export default function Signup() {
     e.preventDefault();
 
     try {
-      
-      const res = await axios.post("http://localhost:8080/api/register", formData);
-      console.log("Signup success:", res.data);
+      await axios.post("http://localhost:8080/api/register", formData);
       navigate("/login");
     } catch (error: any) {
-      console.error("Signup failed:", error.response?.data?.message);
-      toast.error( error.response?.data?.message);
+      console.error("Signup failed:", error.response?.data);
+
+      if (error.response?.data && typeof error.response.data === "object" && !error.response.data.message) {
+        const errors = error.response.data;
+        Object.values(errors).forEach((msg: any) => toast.error(msg));
+        return;
+      }
+
+      const message =
+        error.response?.data?.message ||
+        error.response?.data ||
+        error.message ||
+        "Signup failed!";
+
+      toast.error(message);
     }
   };
+
 
   const inputWrap = 'relative';
   const inputBase =

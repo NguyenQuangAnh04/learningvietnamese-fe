@@ -14,6 +14,9 @@ export default function Profile() {
     const [totalStreak, setTotalStreak] = useState(0);
     const [user, setUser] = useState<UserDTO | null>(null);
     useEffect(() => {
+        document.title = "Profile"
+    })
+    useEffect(() => {
         const fetchUser = async () => {
             try {
                 const res = await getInforUser();
@@ -50,7 +53,7 @@ export default function Profile() {
     return (
         <div className="bg-[#141f25] min-h-screen text-white py-10">
             <div className="max-w-[1200px] mx-auto space-y-6 px-4">
-                <button onClick={() => navigate("/")}><FontAwesomeIcon icon={faArrowLeft} /></button>
+                <button onClick={() => navigate("/home")}><FontAwesomeIcon icon={faArrowLeft} /></button>
 
                 <div className="flex justify-between items-center gap-2">
                     <div>

@@ -114,9 +114,9 @@ export default function AdminUser() {
                     </p>
                 </div>
                 <div className="bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 className="text-sm font-medium text-gray-500">Students</h3>
+                    <h3 className="text-sm font-medium text-gray-500">Users</h3>
                     <p className="text-2xl font-semibold text-green-600 mt-1">
-                        {users.filter(u => u.roleName === 'STUDENT').length}
+                        {users.filter(u => u.roleName === 'USER').length}
                     </p>
                 </div>
             </div>

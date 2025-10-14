@@ -24,13 +24,7 @@ export default function AdminDashboard() {
     }, [])
 
 
-    const topLessons = [
-        { id: 1, title: 'Basic Greetings', completions: 456, rating: 4.8 },
-        { id: 2, title: 'Numbers 1-20', completions: 423, rating: 4.7 },
-        { id: 3, title: 'Family Members', completions: 389, rating: 4.9 },
-        { id: 4, title: 'Colors', completions: 367, rating: 4.6 },
-        { id: 5, title: 'Daily Activities', completions: 345, rating: 4.8 }
-    ];
+
     const [formLesson, setFormLesson] = useState<LessonDTO[]>([]);
     useEffect(() => {
         const fetData = async () => {

@@ -16,6 +16,7 @@ import ChangePassword from './pages/ChangePassword';
 import EditProfile from './pages/EditProfile';
 import ForgotPassword from './pages/ForgotPassword';
 import Game from './pages/Game';
+import Home from './pages/Home';
 import LessionDetails from './pages/LessonDetails';
 import Lessons from './pages/Lessons';
 import LessonVideo from './pages/LessonVideo';
@@ -23,7 +24,6 @@ import Login from './pages/Login';
 import MultipleGame from './pages/MultipleGame';
 import Profile from './pages/Profile';
 import Signup from './pages/Signup';
-import Topic from './pages/Topic';
 
 function App() {
   return (
@@ -36,10 +36,14 @@ function App() {
         <Route path="/reset-password" element={<ChangePassword />} />
 
         {/* Private routes */}
-        <Route path="/" element={
+        <Route path="/home" element={
           <PrivateRoute>
             <Lessons />
           </PrivateRoute>
+        } />
+
+        <Route path="" element={
+          <Home />
         } />
         <Route path="/avatar-setup" element={
           <PrivateRoute>
@@ -71,11 +75,7 @@ function App() {
             <EditProfile />
           </PrivateRoute>
         } />
-        <Route path="/topic/:name/:lessonId" element={
-          <PrivateRoute>
-            <Topic />
-          </PrivateRoute>
-        } />
+     
         {/* <Route path="/quiz/game/:gameId/topic/:topicId" element={
           <PrivateRoute>
             <MultipleGame />

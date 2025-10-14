@@ -1,7 +1,7 @@
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
@@ -10,6 +10,9 @@ export default function ForgotPassword() {
     const [message, setMessage] = useState<string>("");
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        document.title = "Forgot Password"
+    })
     const handleSubmit = async () => {
         setLoading(true)
         try {
@@ -55,7 +58,7 @@ export default function ForgotPassword() {
 
                             <button
                                 onClick={handleSubmit}
-                                disabled={loading || !email} 
+                                disabled={loading || !email}
                                 className={`mt-5 flex gap-2 items-center justify-center w-full 
                                 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-3 
                                 rounded-xl transition-all shadow-md

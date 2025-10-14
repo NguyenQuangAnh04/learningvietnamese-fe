@@ -7,9 +7,13 @@ import Header from '../component/common/Header';
 import { getLessonByTitle } from '../service/lessonService';
 import { LessonDTO } from '../types/Lession';
 import api from '../service/axiosClient';
+import Footer from '../component/common/Footer';
 
 export default function LessonDetails() {
   const [actions, setActions] = useState('Content');
+   useEffect(() => {
+    document.title = "Lesson Details"
+  })
   const [lessonDetails, setLessonDetails] = useState<LessonDTO>();
   const { title } = useParams();
   useEffect(() => {
@@ -48,7 +52,7 @@ export default function LessonDetails() {
         {lessonDetails && (
           <div className='max-w-[1200px] mx-auto w-full  px-4 py-4'>
             <div className='flex gap-3 items-center'>
-              <button onClick={() => navigate("/")}><FontAwesomeIcon icon={faArrowLeft} /></button>
+              <button onClick={() => navigate("/home")}><FontAwesomeIcon icon={faArrowLeft} /></button>
               <span>Back to Lessons</span>
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-5 gap-8 '>
@@ -162,6 +166,7 @@ export default function LessonDetails() {
           </div>
         )}
       </div>
+      <Footer/>
     </>
   )
 }

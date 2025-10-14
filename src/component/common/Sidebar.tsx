@@ -75,13 +75,13 @@ export default function Sidebar() {
 
       <div className='absolute bottom-0 w-64 p-4 border-t border-r border-gray-200 bg-white'>
         <div className='space-y-1'>
-          <Link
+          {/* <Link
             to="/"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200 group"
           >
             <FontAwesomeIcon icon={faHome} className='text-base text-gray-500 group-hover:text-gray-700' />
             <span className='font-medium tracking-tight'>Back to App</span>
-          </Link>
+          </Link> */}
 
           <button
             onClick={() => {

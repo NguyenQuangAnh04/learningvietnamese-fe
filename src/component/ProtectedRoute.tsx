@@ -9,10 +9,10 @@ type ProtectedRouteProps = {
 
 export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     const { user } = useAuth();
-    if (user === null) {
-        return <div>Loading...</div>;
+    if (user === null || localStorage.getItem("access_token") == null) {
+        return <Navigate to="/login" replace />;
     }
-    if (!user) {
+    if (!user ) {
         return <Navigate to="/login" replace />;
     }
 
