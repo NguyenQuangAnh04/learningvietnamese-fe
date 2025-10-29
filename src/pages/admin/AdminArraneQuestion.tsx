@@ -47,6 +47,9 @@ export default function AdminArrangeQuestion({
                 lessonId: data[0]?.lessonId || 0,
                 gameId: data[0]?.gameId || 0,
                 audio_url: "",
+                questionTextJa: "",
+                explanationJa: "",
+
             },
         ]);
     };

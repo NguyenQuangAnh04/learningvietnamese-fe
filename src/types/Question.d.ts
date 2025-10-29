@@ -8,6 +8,8 @@ interface Option {
 export interface Question {
     id: number;
     questionText: string;
+    questionTextJa: string;
+
     image_url: string;
     gameId: number;
     lessonId: number;
@@ -16,6 +18,7 @@ export interface Question {
     options: Option[];
     sentence: string[];
     explanation: string;
+    explanationJa: string;
 }
 
 interface AnswerDTO {

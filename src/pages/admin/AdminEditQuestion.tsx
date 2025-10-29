@@ -92,6 +92,8 @@ export default function AdminEditQuestion({
                 explanation: "",
                 lessonId: data[0]?.lessonId || 0,
                 gameId: data[0]?.gameId || 0,
+                questionTextJa: "",
+                explanationJa: "",
             },
         ])
     }

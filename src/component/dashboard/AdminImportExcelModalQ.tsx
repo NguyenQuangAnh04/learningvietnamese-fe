@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAddQuestion } from '../../hooks/useAddQuestion';
 import { useQueryLesson } from '../../hooks/useLesson';
-import { addQuestion, importQuestionExcelAR, importQuestionExcelLC, importQuestionExcelMC } from '../../service/questionService';
+import { importQuestionExcelAR, importQuestionExcelLC, importQuestionExcelMC } from '../../service/questionService';
 import { Question } from '../../types/Question';
 
 interface AdminImportExcelModalQProps {
@@ -17,6 +18,8 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
   const { data } = useQueryLesson();
   const [error, setError] = useState<string>('');
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+  const { mutateAsync: mutateAddQuestion } = useAddQuestion();
+
   if (!isOpen) return null;
 
   const getModeTitle = () => {
@@ -72,8 +75,7 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
       console.log('Submitting questions:', formData);
       console.log('Selected Lesson ID:', selectedLessonId);
       console.log('Game Type:', typeGame);
-      window.location.reload();
-      await addQuestion(typeGame, selectedLessonId, formData);
+      await mutateAddQuestion({ gameType: typeGame, lessonId: selectedLessonId, questions: formData });
       toast.success(`Successfully added ${formData.length} questions.`);
       setFormData([]);
       setFile(null);
@@ -96,10 +98,12 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
         </div>
 
         <div className="space-y-3 text-sm">
-          <p className="font-medium text-gray-700">{question.questionText}</p>
-          <p className="font-medium text-gray-700">{question.audio_url}</p>
-          {mode === 'MC' || mode === 'LS' ? (
+
+
+          {mode === 'MC' && (
             <div className="space-y-2">
+              <p className="font-medium text-gray-700">Question English: {question.questionText}</p>
+              <p className="font-medium text-gray-700">Question Japan: {question.questionTextJa}</p>
               {question.options.map((opt, idx) => (
                 <div key={idx} className={`p-2 rounded border ${opt.correct
                   ? 'bg-green-100 border-green-300'
@@ -121,7 +125,33 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
                 </div>
               ))}
             </div>
-          ) : (
+          )}
+          {mode === 'LS' && (
+            <div className="space-y-2">
+              <p className="font-medium text-gray-700">Question: {question.questionText}</p>
+              {question.options.map((opt, idx) => (
+                <div key={idx} className={`p-2 rounded border ${opt.correct
+                  ? 'bg-green-100 border-green-300'
+                  : 'bg-gray-50 border-gray-200'
+                  }`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">
+                      <span className="font-medium">{String.fromCharCode(65 + idx)}.</span> {opt.content}
+                    </span>
+                    {opt.correct && (
+                      <span className="text-green-600 text-xs font-medium flex items-center">
+                        <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Correct
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {mode == "AS" && (
             <div className="space-y-2">
               <div className="p-2 bg-gray-50 rounded border">
                 <span className="text-gray-600">Sentence: </span>
@@ -132,20 +162,16 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
 
           {question.explanation && (
             <div className="pt-2 border-t border-gray-200">
-              <p className="text-xs text-gray-600">
-                <span className="font-medium">Explanation: </span>
+              <p className="text-xs text-gray-600 flex flex-col">
+                <span className="font-medium">Explanation English: </span>
                 {question.explanation}
+                <span className="font-medium">Explanation Japan: </span>
+                {question.explanationJa}
               </p>
             </div>
           )}
 
-          {mode === 'LS' && question.audio_url && (
-            <div className="pt-2 border-t border-gray-200">
-              {/* <p className="text-xs text-gray-500 flex items-center">
-                🎵 Audio: {question.audio_url}
-              </p> */}
-            </div>
-          )}
+
         </div>
       </div>
     );
@@ -167,17 +193,21 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
             <div className={`text-sm text-${color}-700 space-y-2`}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p><strong>Cột A:</strong> questionText</p>
-                  <p><strong>Cột B:</strong> option_a</p>
-                  <p><strong>Cột C:</strong> option_b</p>
+                  <p><strong>Column A:</strong> questionTextEN</p>
+                  <p><strong>Column B:</strong> explore EN</p>
+                  <p><strong>Column C:</strong> questionTextJA</p>
+                  <p><strong>Column D:</strong> explore JA</p>
+                  <p><strong>Column E:</strong> option_a</p>
                 </div>
                 <div>
-                  <p><strong>Cột D:</strong> option_c</p>
-                  <p><strong>Cột E:</strong> option_d</p>
-                  <p><strong>Cột F:</strong> correct_answer (A/B/C/D)</p>
+                  <p><strong>Column F:</strong> option_B</p>
+                  <p><strong>Column G:</strong> option_C</p>
+                  <p><strong>Column H:</strong> option_D</p>
+                  <p><strong>Column I:</strong> correct_answer (A/B/C/D)</p>
                 </div>
               </div>
             </div>
+
           </div>
         );
 
@@ -198,19 +228,23 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
             <div className={`text-sm text-${color}-700 space-y-2`}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p><strong>Cột A:</strong> questionText</p>
-                  <p><strong>Cột B:</strong> audio_url (đường dẫn file nghe)</p>
-                  <p><strong>Cột C:</strong> option_a</p>
-                  <p><strong>Cột D:</strong> option_b</p>
+                  <p><strong>Column A:</strong> questionText</p>
+                  <p><strong>Column B:</strong> exploreEN</p>
+                  <p><strong>Column C:</strong> exploreJA</p>
+                  <p><strong>Column D:</strong> option_a</p>
                 </div>
                 <div>
-                  <p><strong>Cột E:</strong> option_c</p>
-                  <p><strong>Cột F:</strong> option_d</p>
-                  <p><strong>Cột G:</strong> correct_answer (A/B/C/D)</p>
-                  <p><strong>Cột H:</strong> explanation (tuỳ chọn)</p>
+                  <p><strong>Column E:</strong> option_b</p>
+                  <p><strong>Column F:</strong> option_c</p>
+                  <p><strong>Column G:</strong> option_d</p>
+                  <p><strong>Column H:</strong> option_e</p>
+                  <p><strong>Column I:</strong> option_f</p>
+                  <p><strong>Column J:</strong> option_g</p>
+                  <p><strong>Column K:</strong> correct_answer (A/B/C/D)</p>
                 </div>
               </div>
             </div>
+
           </div>
         );
 
@@ -225,13 +259,16 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
               Format Excel cho Arrange
             </h4>
             <div className={`text-sm text-${color}-700 space-y-2`}>
-              <p><strong>Cột A:</strong> questionText</p>
-              <p><strong>Cột B:</strong> sentence</p>
+              <p><strong>Column A:</strong> sentence</p>
+              <p><strong>Column B:</strong> exploreEN</p>
+              <p><strong>Column C:</strong> exploreJA</p>
+
               <div className="mt-2 p-2 bg-white rounded border">
-                <p className="text-xs font-medium">Ví dụ:</p>
-                <p className="text-xs">私は学生です</p>
+                <p className="text-xs font-medium">Example:</p>
+                <p className="text-xs">Tôi đang ăn sáng</p>
               </div>
             </div>
+
           </div>
         );
     }
@@ -254,7 +291,13 @@ export default function AdminImportExcelModalQ({ isOpen, onClose, mode }: AdminI
             )}
           </div>
           <button
-            onClick={onClose}
+            onClick={() => {
+              setFormData([]);
+              setFile(null);
+              setError('');
+              setSelectedLessonId(null);
+              onClose();
+            }}
             className='text-gray-400 hover:text-gray-600 transition-colors'
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
