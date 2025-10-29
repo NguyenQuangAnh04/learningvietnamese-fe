@@ -87,7 +87,7 @@ export default function ModalVocabulary({ isOpen = true, onClose }: ModalVocabul
                 <Select
                   options={options}
                   onChange={(option) => setSelectedLessonId(option ? option.value : null)}
-                  placeholder="Choose a lesson..."
+                  placeholder="Choose a leasson..."
                   className="w-full"
                   isSearchable
                   isClearable
@@ -126,6 +126,7 @@ export default function ModalVocabulary({ isOpen = true, onClose }: ModalVocabul
                 <div className="text-sm">
                   <p className="text-blue-800 font-medium">Excel Format:</p>
                   <p className="text-blue-700">Columns: Vietnamese Word | English Meaning | Pronunciation</p>
+                  <p>Data will be read from <strong>row 2 onwards</strong> (header row 1 will be skipped)</p>
                 </div>
               </div>
             </div>
