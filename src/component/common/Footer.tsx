@@ -1,25 +1,30 @@
 import { faFacebook, faGithub, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
-    <footer className="bg-[#14222a] text-gray-300  relative shadow-2xl overflow-hidden">
-
-
+    <footer className="bg-[#14222a] text-gray-300 relative shadow-2xl overflow-hidden">
       <div className="relative max-w-[1200px] mx-auto px-6 py-12 ">
         <div className="flex flex-col md:flex-row justify-between gap-10 mb-10">
           <div className="md:w-1/2">
             <h3 className="text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-4">
-              NQA
+              {t("NQA")}
             </h3>
             <p className="text-gray-400 text-sm leading-relaxed max-w-md">
-              Your ultimate platform to master the Vietnamese language through interactive lessons, engaging quizzes, and consistent daily practice.
+              {t(
+                "Your ultimate platform to master the Vietnamese language through interactive lessons, engaging quizzes, and consistent daily practice."
+              )}
             </p>
           </div>
 
           <div className="flex flex-col items-start md:items-end gap-4">
-            <p className="uppercase text-xs tracking-wider text-gray-500">Follow us</p>
+            <p className="uppercase text-xs tracking-wider text-gray-500">
+              {t("Follow us")}
+            </p>
             <div className="flex gap-5">
               {[
                 { icon: faFacebook, color: "hover:text-blue-500" },
@@ -41,15 +46,12 @@ export default function Footer() {
 
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-sm">
           <p className="text-gray-500">
-            © 2025 <span className="text-white font-medium">NQA</span>. All rights reserved.
+            {t("© 2025")} <span className="text-white font-medium">{t("NQA")}</span>. {t("All rights reserved.")}
           </p>
           <p className="text-gray-400 flex items-center gap-2">
-            Made with{" "}
-            <FontAwesomeIcon
-              icon={faHeart}
-              className="text-red-500 animate-pulse"
-            />{" "}
-            by <span className="font-semibold text-white">NQA Team</span>
+            {t("Made with")}{" "}
+            <FontAwesomeIcon icon={faHeart} className="text-red-500 animate-pulse" />{" "}
+            {t("by")} <span className="font-semibold text-white">{t("NQA Team")}</span>
           </p>
         </div>
       </div>

@@ -9,7 +9,9 @@ import { useQueryLessonUser } from '../hooks/useQueryLessonUser';
 export default function LessonCard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [level, setLevel] = useState('');
-  const { data } = useQueryLessonUser(0, searchTerm, level);
+  const { i18n } = useTranslation();
+  console.log(i18n.language)
+  const { data } = useQueryLessonUser(0, searchTerm, level, 100, i18n.language);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const lessons = data?.lesson || [];

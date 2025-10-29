@@ -1,6 +1,7 @@
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import Header from '../component/common/Header'
 import { findGameByLessonId } from '../service/gameService'
@@ -10,9 +11,10 @@ export default function Game() {
     const { lessonId } = useParams()
     const navigate = useNavigate();
     const [games, setGames] = useState<GameDTO[]>([]);
-     useEffect(() => {
-    document.title = "Game"
-  })
+    useEffect(() => {
+        document.title = "Game"
+    })
+    const { t } = useTranslation();
     const idlesson = Number(lessonId);
     useEffect(() => {
         const fetchData = async () => {
@@ -34,9 +36,9 @@ export default function Game() {
                         <FontAwesomeIcon icon={faArrowLeft} onClick={() => navigate(-1)} size="lg" />
                     </button>
                     <div>
-                        <h2 className="text-xl font-bold">Practice Games</h2>
+                        <h2 className="text-xl font-bold">{t('Practice Games')}</h2>
                         <p className="text-sm text-gray-400">
-                            Choose a game type to start practicing
+                            {t('Choose a game type to start practicing')}
                         </p>
                     </div>
                 </div>
@@ -47,10 +49,11 @@ export default function Game() {
                             <div
                                 className="flex flex-col items-center bg-[#1b262c] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition transform "
                             >
-                                <h2 className="font-semibold text-lg mb-2">{game.title}</h2>
+                                <h2 className="font-semibold text-lg mb-2">{t(game.title)}</h2>
                                 <p className="text-sm text-gray-400 text-center flex-1">
-                                    {game.description}
+                                    {t(game.description)}
                                 </p>
+
                                 <button
                                     onClick={() => {
                                         const slug = game.title.replace(/\s+/g, "-");
@@ -58,7 +61,7 @@ export default function Game() {
                                     }}
                                     className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-xl transition"
                                 >
-                                    Start Game
+                                    {t('Start Game')}
                                 </button>
                             </div>
                         )) : <div>No games available</div>

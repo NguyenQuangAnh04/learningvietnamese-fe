@@ -23,7 +23,9 @@ export async function getUsers(keyword: string, role: Role, page: number): Promi
 export const changeRole = (userId: number, role: Role) => {
     return api.put(`/update-role/${userId}/${role}`);
 }
-
+export const translationLanguage = (language: string) => {
+    return api.put(`/user/translate-language`,null, { params: { language } });
+}
 export const deleteUser = (userId: number) => {
     return api.delete(`/delete/${userId}`);
 }

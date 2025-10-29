@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useWindowSize } from "react-use";
 import { startGame, submit } from "../service/gameService";
@@ -18,7 +19,7 @@ export default function ArrangeSentence() {
     const [playerGameId, setPlayerGameId] = useState<number>(0);
     const [typeGame, setTypeGame] = useState<string>("");
     const [bonusScore, setBonusScore] = useState(0);
-
+    const { t } = useTranslation();
     const [gameId, setGameId] = useState<number>(0);
     const [score, setScore] = useState(0);
     const [isCompleted, setIsCompleted] = useState(false);
@@ -150,45 +151,51 @@ export default function ArrangeSentence() {
                     // Màn hình kết quả - giống MultipleGame
                     <div className="space-y-4 mb-6">
                         <div className="text-center mb-8">
-                            <h2 className="text-3xl font-bold text-yellow-400 mb-2">🎉 Game Complete!</h2>
-                            <p className="text-gray-300">Well done! Here are your results:</p>
+                            <h2 className="text-3xl font-bold text-yellow-400 mb-2">🎉 {t("Game Complete!")}</h2>
+                            <p className="text-gray-300">{t("Well done! Here are your results:")}</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-gradient-to-r from-blue-600/20 to-blue-800/20 border border-blue-500/30 p-6 rounded-xl text-center">
-                                <h3 className="text-lg font-semibold text-blue-300 mb-3">Base Score</h3>
+                                <h3 className="text-lg font-semibold text-blue-300 mb-3">{t("Base Score")}</h3>
                                 <p className="text-3xl font-bold text-white">{totalScore}</p>
-                                <p className="text-sm text-gray-400 mt-1">points</p>
+                                <p className="text-sm text-gray-400 mt-1">{t("points")}</p>
                             </div>
+
                             {bonusScore > 0 && (
                                 <div className="mt-4 border-t border-blue-500/30 pt-4">
                                     <div className="flex justify-between text-yellow-300">
-                                        <span>Perfect Bonus</span>
+                                        <span>{t("Perfect Bonus")}</span>
                                         <span>+{bonusScore}</span>
                                     </div>
                                     <div className="flex justify-between mt-2 text-green-400 font-semibold">
-                                        <span>Total</span>
+                                        <span>{t("Total")}</span>
                                         <span>{totalScore}</span>
                                     </div>
                                 </div>
                             )}
+
                             <div className="bg-gradient-to-r from-green-600/20 to-green-800/20 border border-green-500/30 p-6 rounded-xl text-center">
-                                <h3 className="text-lg font-semibold text-green-300 mb-3">Accuracy</h3>
+                                <h3 className="text-lg font-semibold text-green-300 mb-3">{t("Accuracy")}</h3>
                                 <p className="text-3xl font-bold text-white">
                                     {Math.round((correctAnswers / questions.length) * 100)}%
                                 </p>
                                 <p className="text-sm text-gray-400 mt-1">
-                                    {correctAnswers}/{questions.length} correct
+                                    {correctAnswers}/{questions.length} {t("correct")}
                                 </p>
                             </div>
                         </div>
 
                         <div className="bg-gradient-to-r from-yellow-600/20 to-yellow-800/20 border border-yellow-500/30 p-6 rounded-xl text-center">
-                            <h3 className="text-lg font-semibold text-yellow-300 mb-3">Performance Grade</h3>
+                            <h3 className="text-lg font-semibold text-yellow-300 mb-3">{t("Performance Grade")}</h3>
                             <p className="text-2xl font-bold text-white">
-                                {correctAnswers / questions.length >= 0.9 ? "🏆 Excellent!" :
-                                    correctAnswers / questions.length >= 0.7 ? "⭐ Good!" :
-                                        correctAnswers / questions.length >= 0.5 ? "👍 Fair!" : "💪 Keep trying!"}
+                                {correctAnswers / questions.length >= 0.9
+                                    ? <>🏆 {t("Excellent!")}</>
+                                    : correctAnswers / questions.length >= 0.7
+                                        ? <>⭐ {t("Good!")}</>
+                                        : correctAnswers / questions.length >= 0.5
+                                            ? <>👍 {t("Fair!")}</>
+                                            : <>💪 {t("Keep trying!")}</>}
                             </p>
                         </div>
 
@@ -197,16 +204,17 @@ export default function ArrangeSentence() {
                                 onClick={() => window.location.reload()}
                                 className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"
                             >
-                                🔄 Play Again
+                                🔄 {t("Play Again")}
                             </button>
                             <button
                                 onClick={() => window.history.back()}
                                 className="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"
                             >
-                                📚 Back to Topics
+                                📚 {t("Back to Topics")}
                             </button>
                         </div>
                     </div>
+
                 ) : (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between mb-6">
@@ -215,16 +223,16 @@ export default function ArrangeSentence() {
                                 className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
                             >
                                 <span>←</span>
-                                <span>Back</span>
+                                <span>{t('Back')}</span>
                             </button>
 
                             <div className="text-center">
-                                <h1 className="text-xl font-bold">Arrange Sentence</h1>
-                                <p className="text-sm text-gray-400">Question {currentQuestionIndex + 1} of {questions.length}</p>
+                                <h1 className="text-xl font-bold">{t('Arrange Sentence')}</h1>
+                                <p className="text-sm text-gray-400">{t('Question')} {currentQuestionIndex + 1} {t('of')} {questions.length}</p>
                             </div>
 
                             <div className="text-right">
-                                <p className="text-lg font-semibold text-blue-300">Score: {score}</p>
+                                <p className="text-lg font-semibold text-blue-300">{t('Score')}: {score}</p>
                             </div>
                         </div>
 
@@ -236,20 +244,20 @@ export default function ArrangeSentence() {
                         </div>
 
                         <div className="border border-gray-600 rounded-xl p-4 space-y-4">
-                            <h2 className="text-xl text-center font-semibold text-white mb-4">
+                            {/* <h2 className="text-xl text-center font-semibold text-white mb-4">
                                 Arrange the words to ask about the weather:
-                            </h2>
+                            </h2> */}
 
                             <div className="space-y-4">
                                 <p className="text-sm text-blue-400 text-center">
-                                    Click words below to build your sentence.
+                                    {t('Click words below to build your sentence.')}
                                 </p>
 
                                 {/* Answer Zone */}
                                 <div className="min-h-[80px] border-2 border-dashed border-gray-600 bg-gray-800/30 rounded-xl p-4">
                                     <div className="flex flex-wrap gap-2 justify-center items-center min-h-[50px]">
                                         {words.length === 0 ? (
-                                            <span className="text-gray-400 text-lg font-medium">Click words to build your sentence...</span>
+                                            <span className="text-gray-400 text-lg font-medium">{t('Click words to build your sentence...')}</span>
                                         ) : (
                                             words.map((word, index) => (
                                                 <button
@@ -267,7 +275,7 @@ export default function ArrangeSentence() {
                                 {/* Available Words */}
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-300 mb-3 text-center">
-                                        Available Words:
+                                        {t('Available Words:')}
                                     </h3>
                                     <div className="flex flex-wrap gap-3 justify-center p-4 bg-gray-800/30 rounded-xl border border-gray-700">
                                         {availableWords.length === 0 ? (
@@ -292,7 +300,7 @@ export default function ArrangeSentence() {
                                     className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl font-semibold transition-all shadow-lg transform hover:scale-105"
                                     onClick={resetGame}
                                 >
-                                    🔀 Shuffle Again
+                                    🔀 {t('Shuffle Again')}
                                 </button>
                                 <button
                                     onClick={() => handleSubmitAnswer({
@@ -309,7 +317,7 @@ export default function ArrangeSentence() {
                                         : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
                                         }`}
                                 >
-                                    Submit Answer
+                                    {t('Submit Answer')}
                                 </button>
                             </div>
                         </div>
@@ -320,7 +328,16 @@ export default function ArrangeSentence() {
                                 : 'bg-gradient-to-r from-red-600/20 to-red-800/20 text-red-300 border-red-500/30 shadow-lg'
                                 }`}>
                                 {result}
-
+                                {isCorrect && (questions[currentQuestionIndex] as any)?.explanation && (
+                                    <div className="mt-4 pt-4 border-t border-green-500/30 text-left flex gap-2">
+                                        <p className="text-sm text-green-200 mb-2 font-medium">Explanation:</p>
+                                        <div className="bg-green-900/20 rounded-lg ">
+                                            <p className="text-white text-sm">
+                                                {(questions[currentQuestionIndex] as any).explanation}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                                 {/* ✅ Hiển thị đáp án đúng nếu sai */}
                                 {!isCorrect && questions.length > 0 && (
                                     <div className="mt-4 pt-4 border-t border-red-500/30">

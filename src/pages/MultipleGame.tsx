@@ -2,6 +2,7 @@ import { faArrowLeft, faSpinner, faVolumeUp } from '@fortawesome/free-solid-svg-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import ReactConfetti from 'react-confetti';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWindowSize } from 'react-use';
 import api from '../service/axiosClient';
@@ -79,7 +80,7 @@ const MultipleGame: React.FC = () => {
             setIsSubmitting(false);
         }
     };
-
+    const { t } = useTranslation()
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -92,7 +93,7 @@ const MultipleGame: React.FC = () => {
                     const lastIndex = res.data.questions.findIndex((q: Question) => q.questionId === lastQuestionId);
                     nextIndex = lastIndex + 1 >= res.data.questions.length ? 0 : lastIndex + 1;
                 }
-
+                console.log(res.data)
                 setPlayerGameId(res.data.playerId);
                 setGameId(res.data.gameId);
                 setTypeGame(res.data.type);
@@ -142,41 +143,41 @@ const MultipleGame: React.FC = () => {
                         className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
                     >
                         <FontAwesomeIcon icon={faArrowLeft} />
-                        <span>Back</span>
+                        <span>{t('Back')}</span>
                     </button>
 
                     <div className="text-center">
-                        <h1 className="text-xl font-bold">Multiple Choice</h1>
+                        <h1 className="text-xl font-bold">{t('Multiple Choice')}</h1>
                         <p className="text-sm text-gray-400">
-                            Question {currentQuestionIndex + 1} / {questions.length}
+                            {t('Question')} {currentQuestionIndex + 1} / {questions.length}
                         </p>
                     </div>
 
                     <div className="text-right">
-                        <p className="text-lg font-semibold text-blue-400">Score: {score}</p>
-                        <p className="text-sm text-gray-400">{correctAnswers} correct</p>
+                        <p className="text-lg font-semibold text-blue-400">{t('Score')}: {score}</p>
+                        <p className="text-sm text-gray-400">{correctAnswers} {t('correct')}</p>
                     </div>
                 </div>
 
                 {isCompleted ? (
                     <div className="space-y-4 mb-6">
                         <div className="text-center mb-8">
-                            <h2 className="text-3xl font-bold text-yellow-400 mb-2">🎉 Game Complete!</h2>
-                            <p className="text-gray-300">Well done! Here are your results:</p>
+                            <h2 className="text-3xl font-bold text-yellow-400 mb-2">🎉{t('Game Complete!')}</h2>
+                            <p className="text-gray-300">{t('Well done! Here are your results:')}</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-[#1e2a30] border border-blue-500/30 p-6 rounded-xl text-center">
-                                <h3 className="text-lg font-semibold text-blue-300 mb-3">Base Score</h3>
+                                <h3 className="text-lg font-semibold text-blue-300 mb-3">{t('Base Score')}</h3>
                                 <p className="text-3xl font-bold text-white">{score}</p>
                                 {bonusScore > 0 && (
                                     <div className="mt-4 border-t border-blue-500/30 pt-4">
                                         <div className="flex justify-between text-yellow-300">
-                                            <span>Perfect Bonus</span>
+                                            <span>{t('Perfect Bonus')}</span>
                                             <span>+{bonusScore}</span>
                                         </div>
                                         <div className="flex justify-between mt-2 text-green-400 font-semibold">
-                                            <span>Total</span>
+                                            <span>{t('Total')}</span>
                                             <span>{totalScore + bonusScore}</span>
                                         </div>
                                     </div>
@@ -184,26 +185,29 @@ const MultipleGame: React.FC = () => {
                             </div>
 
                             <div className="bg-[#1e2a30] border border-green-500/30 p-6 rounded-xl text-center">
-                                <h3 className="text-lg font-semibold text-green-300 mb-3">Accuracy</h3>
+                                <h3 className="text-lg font-semibold text-green-300 mb-3">{t('Accuracy')}</h3>
                                 <p className="text-3xl font-bold text-white">
                                     {Math.round((correctAnswers / questions.length) * 100)}%
                                 </p>
                                 <p className="text-sm text-gray-400">
-                                    {correctAnswers}/{questions.length} correct
+                                    {correctAnswers}/{questions.length} {t('correct')}
                                 </p>
                             </div>
                         </div>
 
                         <div className="bg-[#1e2a30] border border-yellow-500/30 p-6 rounded-xl text-center">
-                            <h3 className="text-lg font-semibold text-yellow-300 mb-3">Performance</h3>
+                            <h3 className="text-lg font-semibold text-yellow-300 mb-3">{t('Performance')}</h3>
                             <p className="text-2xl font-bold text-white">
-                                {correctAnswers / questions.length >= 0.9
-                                    ? "🏆 Excellent!"
-                                    : correctAnswers / questions.length >= 0.7
-                                        ? "⭐ Good!"
-                                        : correctAnswers / questions.length >= 0.5
-                                            ? "👍 Fair!"
-                                            : "💪 Keep Trying!"}
+                                <p className="text-2xl font-bold text-white">
+                                    {correctAnswers / questions.length >= 0.9
+                                        ? t("Excellent!")
+                                        : correctAnswers / questions.length >= 0.7
+                                            ? t("Good!")
+                                            : correctAnswers / questions.length >= 0.5
+                                                ? t("Fair!")
+                                                : t("Keep Trying!")}
+                                </p>
+
                             </p>
                         </div>
 
@@ -212,13 +216,13 @@ const MultipleGame: React.FC = () => {
                                 onClick={() => window.location.reload()}
                                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"
                             >
-                                🔄 Play Again
+                                🔄 {t('Play Again')}
                             </button>
                             <button
                                 onClick={() => navigate(-1)}
                                 className="flex-1 bg-gray-700 hover:bg-gray-800 text-white px-6 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"
                             >
-                                📚 Back to Topics
+                                📚 {t('Back to Topics')}
                             </button>
                         </div>
                     </div>
@@ -244,7 +248,7 @@ const MultipleGame: React.FC = () => {
                                     className="mt-3 inline-flex items-center gap-2 bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition"
                                 >
                                     <FontAwesomeIcon icon={faVolumeUp} />
-                                    <span>Listen</span>
+                                    <span>{t('Listen')}</span>
                                 </button>
                             )}
 
@@ -309,21 +313,21 @@ const MultipleGame: React.FC = () => {
                                 {correctOption ? (
                                     <div className="text-green-400">
                                         <div className="text-3xl mb-2">🎉</div>
-                                        <p className="text-xl font-semibold">Excellent!</p>
-                                        <p className="text-green-300">That’s correct!</p>
+                                        <p className="text-xl font-semibold">{t("Excellent!")}</p>
+                                        <p className="text-green-300">{t("That’s correct!")}</p>
                                     </div>
                                 ) : (
                                     <div className="text-red-400">
                                         <div className="text-3xl mb-2">💔</div>
-                                        <p className="text-xl font-semibold">Not quite right</p>
-                                        <p className="text-red-300">Keep trying!</p>
+                                        <p className="text-xl font-semibold">{t("Not quite right")}</p>
+                                        <p className="text-red-300">{t("Keep trying!")}</p>
                                     </div>
                                 )}
 
                                 {currentQuestion.explanation && (
                                     <div className="bg-gray-700/40 rounded-lg p-4 border border-gray-600 mt-4">
                                         <p className="text-gray-300 leading-relaxed">
-                                            <span className="font-semibold text-white">💡 Explanation: </span>
+                                            <span className="font-semibold text-white">💡 {t("Explanation")}: </span>
                                             {currentQuestion.explanation}
                                         </p>
                                     </div>
@@ -333,10 +337,13 @@ const MultipleGame: React.FC = () => {
                                     className="mt-6 bg-white text-gray-900 px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all"
                                     onClick={handleNextQuestion}
                                 >
-                                    {currentQuestionIndex < questions.length - 1 ? "➡️ Next Question" : "🏁 View Results"}
+                                    {currentQuestionIndex < questions.length - 1
+                                        ? <>➡️ {t("Next Question")}</>
+                                        : <>🏁 {t("View Results")}</>}
                                 </button>
                             </div>
                         )}
+
                     </div>
                 )}
             </div>

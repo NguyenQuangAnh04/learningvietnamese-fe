@@ -30,12 +30,12 @@ export default function Header() {
     return (
         <header className='bg-[#14222a] text-white'>
             <nav className='container mx-auto max-w-[1200px] w-full px-2 py-4 shadow-2xl flex justify-between relative '>
-                <a href="/" className='text-2xl font-bold'>
+                <a href="/home" className='text-2xl font-bold'>
                     {t('Learn Vietnamese')} {/* ✅ Dùng translation */}
                 </a>
 
                 <div className="hidden md:flex items-center space-x-6">
-                    <a href="/" className="hover:text-blue-200 transition">
+                    <a href="/home" className="hover:text-blue-200 transition">
                         {t('Home')} {/* ✅ Dùng translation */}
                     </a>
                     <a href="/profile" className="hover:text-blue-200 transition">

@@ -12,10 +12,12 @@ export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) 
     if (user === null || localStorage.getItem("access_token") == null) {
         return <Navigate to="/login" replace />;
     }
-    if (!user ) {
+    if (!user) {
         return <Navigate to="/login" replace />;
     }
-
+    // if (user.role === 'ADMIN') {
+    //     return <Navigate to="/admin" replace />;
+    // }
     if (!requiredRole.includes(user.role)) {
         return <Navigate to="/login" replace />;
     }
