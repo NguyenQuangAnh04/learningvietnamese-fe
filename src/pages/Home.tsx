@@ -110,14 +110,12 @@ const Home: React.FC = () => {
                             <p className="text-xs text-gray-400 mt-6 leading-relaxed">
                                 {t("By continuing, you agree to our")}{" "}
                                 <a
-                                    href="/terms"
                                     className="text-blue-400 hover:text-blue-300 hover:underline transition"
                                 >
                                     {t("Terms of Service")}
                                 </a>{" "}
                                 {t("and")}{" "}
                                 <a
-                                    href="/privacy"
                                     className="text-blue-400 hover:text-blue-300 hover:underline transition"
                                 >
                                     {t("Privacy Policy")}
