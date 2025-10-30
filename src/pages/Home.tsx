@@ -12,12 +12,20 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { TypeAnimation } from "react-type-animation";
 import LanguageSwitcher from "../component/common/LanguageSwitcher";
+import i18n from "../locales/i18n";
 
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
-
+    const typeAnimationSequence = [
+        t("Welcome to NQA — your ultimate platform to master Vietnamese vocabulary, grammar, and conversation."),
+        2000,
+        "",
+        t("Practice with fun lessons, interactive quizzes, and daily challenges!"),
+        2000,
+        "",
+    ];
     useEffect(() => {
         document.title = t("Learn Vietnamese");
     }, [t]);
@@ -38,14 +46,8 @@ const Home: React.FC = () => {
 
                         <p className="text-lg md:text-xl text-gray-300 max-w-md mb-10 leading-relaxed min-h-[100px]">
                             <TypeAnimation
-                                sequence={[
-                                    t("Welcome to NQA — your ultimate platform to master Vietnamese vocabulary, grammar, and conversation."),
-                                    2000,
-                                    "",
-                                    t("Practice with fun lessons, interactive quizzes, and daily challenges!"),
-                                    2000,
-                                    "",
-                                ]}
+                                key={i18n.language} 
+                                sequence={typeAnimationSequence}
                                 speed={50}
                                 deletionSpeed={30}
                                 wrapper="span"
