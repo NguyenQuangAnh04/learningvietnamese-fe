@@ -63,7 +63,7 @@ export default function LessonCard() {
           {lessons.map(lesson => (
             <div
               key={lesson.id}
-              className="flex flex-col border border-white/10 rounded-xl p-5 bg-[#1c2a32] hover:shadow-xl hover:border-cyan-500/40 transition-all duration-300"
+              className="flex flex-col border border-white/10 rounded-xl p-5 bg-[#1c2a32] hover:shadow-xl hover:border-cyan-500/40 transition-all duration-300 h-full"
             >
               <div className="flex items-start justify-between">
                 <h3 className="font-semibold text-[15px] leading-snug">
@@ -96,20 +96,21 @@ export default function LessonCard() {
 
               <div className="mt-3 flex items-center gap-3 flex-wrap">
                 <span className={`text-[11px] px-2 py-[3px] rounded-md font-medium capitalize ${badgeClass((lesson.level).toLowerCase())}`}>
-                  {t(lesson.level.charAt(0).toUpperCase() + lesson.level.slice(1))} {/* ✅ Thêm translation cho level */}
+                  {t(lesson.level.charAt(0).toUpperCase() + lesson.level.slice(1))}
                 </span>
                 <span className="text-[12px] text-gray-400 flex items-center gap-1">
                   <FontAwesomeIcon icon={faClock} /> {lesson.time}
                 </span>
               </div>
 
-              <div className="mt-5">
+              {/* ← Thêm mt-auto để button luôn ở dưới cùng */}
+              <div className="mt-auto pt-5">
                 <button
                   onClick={() => navigate(`/lessons/${lesson.title.toLowerCase().replace(/\s+/g, '-')}`)}
-                  className="w-full text-[13px] font-medium rounded-md flex items-center justify-center gap-3 py-2 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white shadow-md"
+                  className="w-full text-[13px] font-medium rounded-md flex items-center justify-center gap-3 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white shadow-md min-h-[44px]"
                 >
                   <FontAwesomeIcon icon={faBookOpen} className="text-[12px]" />
-                  <span>{t('Start Learning')}</span> {/* ✅ Thay "Review Lesson" thành "Start Learning" */}
+                  <span>{t('Start Learning')}</span>
                 </button>
               </div>
             </div>
